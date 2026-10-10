@@ -2,7 +2,16 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta name="description" content="個人教室のお知らせ・休講連絡・SNS投稿を簡単に作成できる無料の文章作成ツール。"/>
+<meta name="description" content="ピアノ・英会話・スポーツ教室の発表会案内、休講連絡、月のおたよりを無料で作成。LINE・Instagram向けにも調整できる文章作成ツール。"/>
+<link rel="canonical" href="https://otayori-ai.pages.dev/"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="おたよりAI"/>
+<meta property="og:title" content="おたよりAI | 教室のお知らせ・連絡文をかんたん作成"/>
+<meta property="og:description" content="習い事教室の発表会・休講連絡・月のおたよりを無料で下書き。"/>
+<meta property="og:url" content="https://otayori-ai.pages.dev/"/>
+<meta name="robots" content="index,follow"/>
+<meta name="theme-color" content="#227c57"/>
+<link rel="icon" href="./favicon.svg" type="image/svg+xml"/>
 <title>おたよりAI | 教室のお知らせをかんたん作成</title>
 <style>
 :root{font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;color:#20332d;background:#f5f9f5}*{box-sizing:border-box}body{margin:0}header{background:#fff;border-bottom:1px solid #dae8de;padding:17px max(20px,calc((100vw - 1080px)/2));display:flex;justify-content:space-between;align-items:center}.logo{font-size:22px;font-weight:800;color:#207756}.pill{background:#e7f5ea;border-radius:50px;padding:6px 12px;color:#207756;font-size:12px}main{max-width:1080px;margin:auto;padding:30px 18px 65px}.hero{text-align:center;margin:12px auto 28px}.hero h1{font-size:clamp(26px,4vw,42px);margin:8px}.hero p{color:#64756c;line-height:1.7}.layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{background:white;padding:25px;border-radius:18px;box-shadow:0 5px 22px #1635270b;border:1px solid #e1ebe4}h2{font-size:20px;margin:0 0 20px}label{display:block;font-weight:650;font-size:14px;margin:13px 0 6px}input,select,textarea{display:block;width:100%;font:inherit;border:1px solid #cadbd0;border-radius:9px;padding:11px;background:white;color:#20332d}textarea{resize:vertical;min-height:118px}button{font:inherit;cursor:pointer;border:0;border-radius:9px;padding:11px 15px;font-weight:700}.primary{background:#227c57;color:white}.secondary{background:#e8f5ec;color:#176b49}.btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.output{white-space:pre-wrap;line-height:1.9;min-height:285px;background:#f8fbf8;border:1px solid #e0ece3;padding:16px;border-radius:12px}.muted{color:#73887c}.history{margin-top:20px}.history-item{display:flex;justify-content:space-between;gap:8px;border-top:1px solid #e4eee7;padding:12px 0}.history-item button{padding:5px 10px}.notice{font-size:13px;color:#62796b;line-height:1.7;margin-top:12px}footer{text-align:center;color:#789087;font-size:12px;padding:12px}@media(max-width:720px){.layout{grid-template-columns:1fr}main{padding-top:18px}.panel{padding:18px}header{padding:15px 18px}}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #81cfa4}
@@ -13,10 +22,23 @@
 #output:focus{outline:3px solid #81cfa4}.history-item span{flex:1;min-width:0;overflow-wrap:anywhere}
 .actions{display:flex;align-items:center;gap:6px}.actions button{white-space:nowrap}
 @media(max-width:480px){.history-item{align-items:flex-start;flex-direction:column}.actions{align-self:flex-end}}
+
+.toplinks{display:flex;gap:15px;align-items:center;flex-wrap:wrap;font-size:13px}
+a{color:#176b49}a:hover{text-decoration:none}
+.verify-box{margin-top:14px;padding:12px;background:#f4f9f6;border:1px solid #dbece0;border-radius:10px}
+.verify-note{color:#486d59;font-size:12px;line-height:1.7;margin:8px 0 0}
+#turnstileWidget{min-height:0}
+.info-section{margin:22px auto 0;background:white;padding:26px;border:1px solid #e0ece3;border-radius:17px;max-width:1080px}
+.info-section h2{margin:0 0 10px}.info-section p{line-height:1.8;margin:6px 0 14px;color:#516e5e}
+.info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.info-card{background:#f5faf6;padding:15px;border-radius:10px}
+.info-card h3{font-size:16px;margin:0 0 7px}
+.info-card p{font-size:13px;margin:0}
+@media(max-width:720px){.info-grid{grid-template-columns:1fr} .toplinks{gap:8px}}
 </style>
 </head>
 <body>
-<header><div class="logo">✉ おたよりAI</div><div class="pill">無料お試し版</div></header>
+<header><div class="logo">✉ おたよりAI</div><nav class="toplinks" aria-label="サイトメニュー"><a href="./guide.html">例文・使い方</a><a href="./privacy.html">プライバシー</a><span class="pill">無料お試し版</span></nav></header>
 <main>
 <div class="hero"><h1>教室のお知らせを、もっとかんたんに。</h1><p>ピアノ・英会話・スポーツ教室などの連絡文をすばやく下書き。<br>文章を確認・編集して、そのままコピーできます。</p></div>
 <div class="layout">
@@ -29,24 +51,44 @@
 <label for="tone">文章の雰囲気</label><select id="tone"><option value="polite">丁寧</option><option value="friendly">親しみやすい</option></select>
 <label for="mode">文章作成モード</label><select id="mode"><option value="template">テンプレート（いつでも利用可能）</option><option value="ai">AIで文章を生成（Cloudflare版）</option></select>
 <label for="length">文章の長さ</label><select id="length"><option value="normal">標準</option><option value="short">短め（要点だけ）</option><option value="long">詳しく</option></select>
-<label for="date">日時（任意）</label><input id="date" placeholder="例：11月15日 13:00〜"/>
-<label for="place">場所（任意）</label><input id="place" placeholder="例：市民ホール"/>
+<label for="date">日時（任意）</label><input id="date" maxlength="120" placeholder="例：11月15日 13:00〜"/>
+<label for="place">場所（任意）</label><input id="place" maxlength="120" placeholder="例：市民ホール"/>
 <div class="shortcut-area"><p class="help">入力例から試す</p><div class="btns compact"><button type="button" class="secondary example" data-example="event">発表会</button><button type="button" class="secondary example" data-example="closed">休講</button><button type="button" class="secondary example" data-example="monthly">月のおたより</button></div></div>
 <label for="info">伝えたい内容 <span style="color:#a63a3a">*</span></label><textarea id="info" maxlength="1000" placeholder="例：参加費2,000円。持ち物は楽譜。申し込みは11月1日まで。"></textarea>
 <div class="btns"><button class="primary" id="generate">文章を作成する</button><button class="secondary" id="reset">入力をクリア</button></div>
-<p class="notice">テンプレートモードは端末内で動作します。AIモードはCloudflare公開後に利用可能となり、入力内容がAI処理に送信されます。生徒の氏名・住所など個人情報は入力しないでください。</p>
+<div class="verify-box" id="turnstilePanel" hidden>
+<strong>安全確認</strong>
+<p class="verify-note">AIを安全に提供するため、生成前に簡単な確認をお願いしています。</p>
+<div id="turnstileWidget" aria-label="自動アクセス防止のための認証"></div>
+</div>
+<p class="verify-note" id="verificationNote" aria-live="polite"></p>
+<p class="notice">テンプレートモードは端末内で作成します。AIモードは入力内容をCloudflareのAIへ送信します。生徒の氏名・住所など個人情報は入力しないでください。詳しくは<a href="./privacy.html">プライバシー案内</a>をご確認ください。</p>
 </section>
 <section class="panel"><h2>📄 作成した文章</h2><div id="output" class="output muted" contenteditable="true" role="textbox" aria-label="作成した文章（直接編集できます）" aria-multiline="true" aria-live="polite">左のフォームに入力して「文章を作成する」を押してください。</div>
 <div class="btns"><button class="primary" id="copy">文章をコピー</button><button class="secondary" id="save">履歴に保存</button></div>
 <p class="notice" id="status" aria-live="polite">生成した文章はここで直接編集できます。コピー前に日時・料金などを確認してください。</p>
 <div class="history"><h2>🕒 保存した履歴</h2><div id="historyList" class="muted">履歴はまだありません。</div><button class="secondary" id="clearHistory" style="margin-top:10px">履歴をすべて削除</button><p class="notice">履歴はこの端末のブラウザ内にのみ保存されます。最大20件まで。各履歴を個別に削除できます。</p></div>
 </section></div>
-</main><footer>© おたよりAI ・ 文章の最終確認は利用者自身で行ってください。</footer>
+<section class="info-section" aria-labelledby="howto"><h2 id="howto">こんなお知らせを、数分で作成</h2>
+<div class="info-grid">
+<div class="info-card"><h3>発表会・イベントのご案内</h3><p>日時、場所、参加費、申込期限を整理して読みやすい連絡文に。</p></div>
+<div class="info-card"><h3>休講・振替の連絡</h3><p>保護者に誤解なく伝わる休講案内や、振替レッスンの通知に。</p></div>
+<div class="info-card"><h3>月のおたより</h3><p>教室の近況や今月のお知らせを、LINE・紙配布・SNS用に調整。</p></div>
+</div>
+<p><a href="./guide.html">教室のお知らせの書き方・具体的な例文を見る →</a></p>
+<p>※ AIが入力していない情報を補ってしまうことがあります。日付・会場・費用・連絡先は公開前に必ずご確認ください。</p>
+</section>
+</main><footer>© おたよりAI ・ <a href="./privacy.html">プライバシー</a> ・ <a href="./guide.html">使い方</a> ・ 文章の最終確認は利用者自身で行ってください。</footer>
 <script>
 const $=id=>document.getElementById(id);
 const fields=['school','type','target','tone','date','place','info'];
 const KEY='otayori-ai-history-v1';
 const SETTINGS_KEY='otayori-ai-settings-v1';
+let requiresTurnstile=false;
+let turnstileToken='';
+let turnstileWidget=null;
+let turnstileReady=false;
+
 let draft='';
 function getHistory(){
   try{
@@ -105,7 +147,11 @@ async function createDocument(){
     $('status').textContent='AIモードはCloudflare Pagesでの公開とAI接続後に使えます。今はテンプレートを選んでください。';
     return;
   }
-  const inputs={...Object.fromEntries(fields.map(k=>[k,$(k).value.trim()])),length:$('length').value};
+  if(requiresTurnstile&&!turnstileToken){
+    $('status').textContent='AI生成前に「安全確認」を完了してください。認証が表示されない場合はページを再読み込みしてください。';
+    return;
+  }
+  const inputs={...Object.fromEntries(fields.map(k=>[k,$(k).value.trim()])),length:$('length').value,turnstileToken};
   const button=$('generate');
   button.disabled=true;button.textContent='AIが作成中…';
   $('status').textContent='AIで下書きを作成しています。しばらくお待ちください。';
@@ -127,6 +173,12 @@ async function createDocument(){
     $('status').textContent=error.name==='AbortError'?'時間がかかりすぎたため停止しました。もう一度お試しください。':('AI生成できませんでした：'+error.message+' テンプレートは引き続き使えます。');
   }finally{
     clearTimeout(timeout);button.disabled=false;button.textContent='文章を作成する';
+    if(requiresTurnstile){
+      turnstileToken='';
+      if(turnstileReady&&window.turnstile&&turnstileWidget!==null){
+        window.turnstile.reset(turnstileWidget);
+      }
+    }
   }
 }
 
@@ -175,6 +227,48 @@ document.querySelectorAll('[data-example]').forEach(button=>{
  });
 });
 restorePrefs();
+
+async function loadTurnstile(sitekey){
+  const script=document.createElement('script');
+  script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+  script.async=true;
+  script.onload=()=>{
+    try{
+      if(!window.turnstile)throw Error('Turnstileの読み込みに失敗');
+      turnstileWidget=window.turnstile.render('#turnstileWidget',{
+        sitekey, action:'generate', theme:'light', size:'flexible',
+        callback:(token)=>{turnstileToken=token;$('verificationNote').textContent='安全確認が完了しました。AI文章生成を実行できます。';},
+        'expired-callback':()=>{turnstileToken='';$('verificationNote').textContent='認証の期限が切れました。もう一度確認してください。';},
+        'error-callback':()=>{turnstileToken='';$('verificationNote').textContent='安全確認ができませんでした。ページを更新してください。';}
+      });
+      turnstileReady=true;
+    }catch{$('verificationNote').textContent='安全確認を読み込めませんでした。ページを更新してください。';}
+  };
+  script.onerror=()=>{$('verificationNote').textContent='認証サービスに接続できませんでした。通信状態をご確認ください。';};
+  document.head.appendChild(script);
+}
+async function initializeVerification(){
+  if(location.hostname.endsWith('.github.io'))return;
+  try{
+    const response=await fetch('/api/config',{cache:'no-store'});
+    if(!response.ok)throw Error('設定情報を取得できません');
+    const config=await response.json();
+    if(config.misconfigured){
+      requiresTurnstile=true;
+      $('verificationNote').textContent='安全確認の設定が未完了です。管理者がCloudflareの環境変数を確認してください。';
+    }else if(config.turnstileEnabled&&typeof config.sitekey==='string'){
+      requiresTurnstile=true;
+      $('turnstilePanel').hidden=false;
+      $('verificationNote').textContent='AI生成には安全確認が必要です。';
+      await loadTurnstile(config.sitekey);
+    }else{
+      $('verificationNote').textContent='現在は試用版です。アクセス制限を準備中です。';
+    }
+  }catch{
+    $('verificationNote').textContent='アクセス制限の設定を確認できませんでした。AI生成できない場合は後でもう一度お試しください。';
+  }
+}
+initializeVerification();
 
 </script>
 </body></html>
