@@ -99,3 +99,12 @@ Cloudflare側で `AI_RATE_DB`（D1バインディング）と `AI_RATE_SALT`（S
 - `lesson-cancellation.html`：予定休講、急な休講、振替日が確定している場合の例文。
 - 両ページから `/?sample=...` で入力例を文章作成フォームにセットする。許可済みの固定サンプルのみ使い、URLパラメータの自由入力は行わない。AI生成を自動実行せず、訪問者が日時・金額・場所を確認してから生成する。
 - `guide.html` とトップページから相互リンク、`sitemap.xml` に追加。検索順位・流入効果は保証されないため、Google Search Consoleで実データを確認して改善する。
+
+## SEO・導線・将来の料金案内（2026年10月）
+- `english-trial.html`：英会話教室向け体験レッスンの案内文。本文例・LINE例・誤認防止のチェック。
+- `monthly-newsletter.html`：習い事教室の月のおたより（家庭へのお願い・教室ごとの工夫を掲載）。
+- ホームページの無料作成CTA、使い方3ステップ、サイトURLのみを共有するボタン。
+- `/?sample=english-trial`、`english-line`、`monthly-parent`、`monthly-line` の固定サンプル入力を追加。サンプルにある日時や費用は架空と表示し、自動AI生成しない。
+- `plans.html` は現在無料・将来の有料機能候補・料金未定・申し込み不可を明示。誤認防止のため `noindex,follow` を指定し、サイトマップには載せない。
+- `GROWTH_PLAN.md` に、実データに基づく集客と課金準備のチェックリストを記載。
+- Cloudflare Web Analytics はこのコミットでは**自動有効化されない**。Cloudflareダッシュボードで別途有効化したうえで、数字を見て改善方針を調整する。

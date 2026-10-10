@@ -62,14 +62,31 @@ a{color:#176b49}a:hover{text-decoration:none}
 .topic-links a:hover{background:#e9f6ec}
 .topic-links small{display:block;font-size:12px;color:#657a6c;line-height:1.7;margin-top:4px}
 @media(max-width:720px){.topic-links{grid-template-columns:1fr}}
+.hero-actions{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 0}
+.hero-cta{display:inline-block;padding:12px 20px;border-radius:10px;background:#227c57;color:#fff;text-decoration:none;font-weight:750}
+.hero-cta:hover{background:#176a48;color:white}
+.hero-status{font-size:12px;min-height:1.6em}
+.steps{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:13px;font-size:13px;color:#486958}
+.steps span{padding:7px 11px;border-radius:9px;background:#e8f4eb}
+.steps b{display:inline-grid;place-items:center;width:21px;height:21px;background:#227c57;color:white;border-radius:50%;margin-right:5px;font-size:12px}
+#create{scroll-margin-top:20px}
+@media(max-width:480px){.hero-actions{flex-direction:column}.hero-cta,.hero-actions button{width:100%;text-align:center}.steps{justify-content:flex-start;flex-direction:column}}
 </style>
 </head>
 <body>
-<header><div class="logo">✉ おたよりAI</div><nav class="toplinks" aria-label="サイトメニュー"><a href="./guide.html">例文・使い方</a><a href="./privacy.html">プライバシー</a><span class="pill">無料お試し版</span></nav></header>
+<header><div class="logo">✉ おたよりAI</div><nav class="toplinks" aria-label="サイトメニュー"><a href="./guide.html">例文・使い方</a><a href="./plans.html">利用料金・今後の予定</a><a href="./privacy.html">プライバシー</a><span class="pill">無料お試し版</span></nav></header>
 <main>
-<div class="hero"><h1>教室のお知らせを、もっとかんたんに。</h1><p>ピアノ・英会話・スポーツ教室などの連絡文をすばやく下書き。<br>文章を確認・編集して、そのままコピーできます。</p></div>
+<div class="hero"><h1>教室のお知らせを、もっとかんたんに。</h1><p>ピアノ・英会話・スポーツ教室などの連絡文をすばやく下書き。<br>文章を確認・編集して、そのままコピーできます。</p>
+<div class="hero-actions">
+<a class="hero-cta" href="#create">無料で文章を作成する ↓</a>
+<button type="button" class="secondary" id="shareSite">先生仲間にサイトを紹介</button>
+</div>
+<p class="hero-status" id="shareStatus" aria-live="polite">登録不要。テンプレートモードならAIの利用回数を消費しません。</p>
+<div class="steps" aria-label="文章作成の手順">
+<span><b>1</b> お知らせの種類を選ぶ</span><span><b>2</b> 内容を入力して作成</span><span><b>3</b> 確認してコピー</span>
+</div></div>
 <div class="layout">
-<section class="panel"><h2>✍ 文章の内容を入力</h2>
+<section class="panel" id="create"><h2>✍ 文章の内容を入力</h2>
 <label for="school">教室名</label><input id="school" placeholder="例：みどりピアノ教室" maxlength="80"/>
 <div class="btns compact"><button type="button" id="savePrefs" class="secondary">教室の設定をこの端末に保存</button><button type="button" id="clearPrefs" class="secondary">設定を削除</button></div>
 <p class="help" id="presetStatus" aria-live="polite">教室名・ジャンル・文体・送信先・文章の長さなどを保存します。連絡内容は保存しません。</p>
@@ -119,10 +136,12 @@ a{color:#176b49}a:hover{text-decoration:none}
 <div class="topic-links" aria-label="目的別の例文ガイド">
  <a href="./piano-recital.html"><strong>ピアノ発表会の案内文</strong><small>保護者向け・LINE用の文例と確認項目</small></a>
  <a href="./lesson-cancellation.html"><strong>休講・振替の連絡文</strong><small>急な休講・予定休講・振替未定の例文</small></a>
+ <a href="./english-trial.html"><strong>英会話の体験レッスン案内</strong><small>申し込み・対象年齢・持ち物の伝え方</small></a>
+ <a href="./monthly-newsletter.html"><strong>月のおたよりの例文</strong><small>今月の目標・保護者へのお願い・LINE連絡</small></a>
 </div>
 <p>※ AIが入力していない情報を補ってしまうことがあります。日付・会場・費用・連絡先は公開前に必ずご確認ください。</p>
 </section>
-</main><footer>© おたよりAI ・ <a href="./privacy.html">プライバシー</a> ・ <a href="./guide.html">使い方</a> ・ 文章の最終確認は利用者自身で行ってください。</footer>
+</main><footer>© おたよりAI ・ <a href="./privacy.html">プライバシー</a> ・ <a href="./guide.html">使い方</a> ・ <a href="./plans.html">利用料金・今後の予定</a> ・ 文章の最終確認は利用者自身で行ってください。</footer>
 <script>
 const $=id=>document.getElementById(id);
 const fields=['school','schoolType','type','target','tone','date','place','info'];
@@ -288,6 +307,23 @@ async function reviseDocument(){
   await invokeAI(inputs,'revise');
 }
 
+$('shareSite').addEventListener('click',async()=>{
+ const url='https://otayori-ai.pages.dev/';
+ const description='おたよりAI｜教室の案内文や休講連絡を無料で作れるサイト';
+ try{
+   if(typeof navigator.share==='function'){
+     await navigator.share({title:'おたよりAI',text:description,url});
+     $('shareStatus').textContent='サイトを共有しました。文章や個人情報は送信していません。';
+   }else if(navigator.clipboard?.writeText){
+     await navigator.clipboard.writeText(url);
+     $('shareStatus').textContent='サイトのURLをコピーしました。先生仲間に送れます。';
+   }else{
+     $('shareStatus').textContent='このURLを共有してください：'+url;
+   }
+ }catch(error){
+   if(error?.name!=='AbortError')$('shareStatus').textContent='共有できませんでした。URLをコピーしてお使いください：'+url;
+ }
+});
 $('historySearch').addEventListener('input',renderHistory);
 $('generate').addEventListener('click',createDocument);
 $('revise').addEventListener('click',reviseDocument);
@@ -353,6 +389,26 @@ document.querySelectorAll('[data-example]').forEach(button=>{
 restorePrefs();
 // Topic pages use an explicit, allowlisted sample id. No visitor-supplied free text is inserted.
 const samplePresets={
+ 'english-trial':{
+  schoolType:'english',type:'event',target:'parent',tone:'polite',length:'normal',
+  date:'11月8日 10:00〜10:40',place:'教室',
+  info:'小学生向けの英会話体験レッスンを開催します。参加希望の場合は11月1日までに教室へご連絡ください。参加費は無料です。筆記用具を持参してください。'
+ },
+ 'english-line':{
+  schoolType:'english',type:'event',target:'line',tone:'friendly',length:'short',
+  date:'11月8日 10:00〜10:40',place:'教室',
+  info:'小学生向け英会話体験レッスンを開催します。参加費は無料。参加希望は11月1日までに教室へご連絡ください。'
+ },
+ 'monthly-parent':{
+  schoolType:'general',type:'monthly',target:'parent',tone:'polite',length:'normal',
+  date:'11月',place:'',
+  info:'11月は基礎練習を丁寧に進めます。ご家庭では練習の進捗をあたたかく見守ってください。お休みの予定は教室から別途ご案内します。'
+ },
+ 'monthly-line':{
+  schoolType:'general',type:'monthly',target:'line',tone:'friendly',length:'short',
+  date:'11月',place:'',
+  info:'11月は基礎練習を大切に進めます。ご家庭での見守りをお願いします。連絡事項は決まり次第お送りします。'
+ },
  'piano-recital':{
   schoolType:'piano',type:'event',target:'parent',tone:'polite',length:'normal',
   date:'11月15日 13:00から',place:'市民ホール',
