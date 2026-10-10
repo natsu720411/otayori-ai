@@ -36,6 +36,22 @@ a{color:#176b49}a:hover{text-decoration:none}
 .info-card h3{font-size:16px;margin:0 0 7px}
 .info-card p{font-size:13px;margin:0}
 @media(max-width:720px){.info-grid{grid-template-columns:1fr} .toplinks{gap:8px}}
+
+/* AI writing workflow */
+.workflow-tools{margin-top:18px;padding:15px;border:1px solid #dcebe0;background:#f6faf7;border-radius:13px}
+.workflow-tools h3{margin:0 0 8px;font-size:16px}
+.workflow-tools select{max-width:340px}
+#reviewHints{margin:8px 0 0;padding-left:21px;color:#4e6959;font-size:13px;line-height:1.85}
+#output{overflow-wrap:anywhere}
+#output[contenteditable="true"]:focus{background:#fff}
+.button-hint{font-size:12px;color:#658074;margin:7px 0}
+.indicator{font-variant-numeric:tabular-nums;text-align:right;color:#557667;font-size:12px;margin-top:8px}
+@media print{
+ header,.hero,.layout>.panel:first-child,.btns,.history,.workflow-tools,
+ .notice,.info-section,footer,#status,#characterCount{display:none!important}
+ body,main,.layout,.panel{background:white!important;box-shadow:none!important;border:0!important;padding:0!important;margin:0!important}
+ .layout{display:block!important}.output{border:0!important;min-height:0!important;white-space:pre-wrap!important;color:black!important}
+}
 </style>
 </head>
 <body>
@@ -46,7 +62,8 @@ a{color:#176b49}a:hover{text-decoration:none}
 <section class="panel"><h2>✍ 文章の内容を入力</h2>
 <label for="school">教室名</label><input id="school" placeholder="例：みどりピアノ教室" maxlength="80"/>
 <div class="btns compact"><button type="button" id="savePrefs" class="secondary">教室の設定をこの端末に保存</button><button type="button" id="clearPrefs" class="secondary">設定を削除</button></div>
-<p class="help" id="presetStatus" aria-live="polite">教室名・文体・送信先・文章の長さのみ保存します。連絡内容は保存しません。</p>
+<p class="help" id="presetStatus" aria-live="polite">教室名・ジャンル・文体・送信先・文章の長さなどを保存します。連絡内容は保存しません。</p>
+<label for="schoolType">教室のジャンル（任意）</label><select id="schoolType"><option value="general">一般的な教室</option><option value="piano">ピアノ・音楽</option><option value="english">英会話・語学</option><option value="sports">スポーツ・ダンス</option><option value="study">学習塾・学習教室</option></select>
 <label for="type">お知らせの種類</label><select id="type"><option value="event">発表会・イベント</option><option value="closed">休講・振替</option><option value="monthly">月のおたより</option><option value="notice">一般のお知らせ</option></select>
 <label for="target">送る相手・掲載先</label><select id="target"><option value="parent">保護者向け</option><option value="line">LINE用</option><option value="instagram">Instagram用</option></select>
 <label for="tone">文章の雰囲気</label><select id="tone"><option value="polite">丁寧</option><option value="friendly">親しみやすい</option></select>
@@ -66,7 +83,19 @@ a{color:#176b49}a:hover{text-decoration:none}
 <p class="notice">テンプレートモードは端末内で作成します。AIモードは入力内容をCloudflareのAIへ送信します。生徒の氏名・住所など個人情報は入力しないでください。詳しくは<a href="./privacy.html">プライバシー案内</a>をご確認ください。</p>
 </section>
 <section class="panel"><h2>📄 作成した文章</h2><div id="output" class="output muted" contenteditable="true" role="textbox" aria-label="作成した文章（直接編集できます）" aria-multiline="true" aria-live="polite">左のフォームに入力して「文章を作成する」を押してください。</div>
-<div class="btns"><button class="primary" id="copy">文章をコピー</button><button class="secondary" id="save">履歴に保存</button></div>
+<div id="characterCount" class="indicator" aria-live="polite">0文字</div>
+<div class="btns"><button class="primary" id="copy">文章をコピー</button><button class="secondary" id="save">履歴に保存</button><button class="secondary" id="download">テキスト保存</button><button class="secondary" id="undo" disabled>編集前に戻す</button></div>
+<section class="workflow-tools" aria-label="AIで文章を整える">
+<h3>✨ AIで文章を整える</h3>
+<p class="help">上の文章を直接修正してからでも、表現を整え直せます。AIへの送信はボタンを押したときだけです。</p>
+<label for="revision">書き直し方</label>
+<select id="revision"><option value="gentle">やわらかく親しみやすく</option><option value="formal">より丁寧で正式に</option><option value="concise">短く要点を整理</option><option value="clear">読みやすく分かりやすく</option></select>
+<div class="btns"><button class="primary" id="revise">AIで書き直す</button></div>
+<p id="reviewStatus" class="help" aria-live="polite">AI生成には安全確認が必要な場合があります。</p>
+</section>
+<section class="workflow-tools"><h3>✅ 公開前のチェック</h3>
+<ul id="reviewHints"><li>文章を作成すると確認項目が表示されます。</li></ul>
+<p class="button-hint">自動確認は目安です。日時、費用、事実関係は必ず人が確認してください。</p></section>
 <p class="notice" id="status" aria-live="polite">生成した文章はここで直接編集できます。コピー前に日時・料金などを確認してください。</p>
 <div class="history"><h2>🕒 保存した履歴</h2><div id="historyList" class="muted">履歴はまだありません。</div><button class="secondary" id="clearHistory" style="margin-top:10px">履歴をすべて削除</button><p class="notice">履歴はこの端末のブラウザ内にのみ保存されます。最大20件まで。各履歴を個別に削除できます。</p></div>
 </section></div>
@@ -82,7 +111,7 @@ a{color:#176b49}a:hover{text-decoration:none}
 </main><footer>© おたよりAI ・ <a href="./privacy.html">プライバシー</a> ・ <a href="./guide.html">使い方</a> ・ 文章の最終確認は利用者自身で行ってください。</footer>
 <script>
 const $=id=>document.getElementById(id);
-const fields=['school','type','target','tone','date','place','info'];
+const fields=['school','schoolType','type','target','tone','date','place','info'];
 const KEY='otayori-ai-history-v1';
 const SETTINGS_KEY='otayori-ai-settings-v1';
 let requiresTurnstile=false;
@@ -91,6 +120,33 @@ let turnstileWidget=null;
 let turnstileReady=false;
 
 let draft='';
+let undoDraft='';
+let aiBusy=false;
+function renderUndo(){ $('undo').disabled=!undoDraft; }
+function updateCount(){
+  const current=currentText();
+  $('characterCount').textContent=current.length.toLocaleString('ja-JP')+'文字';
+}
+function reviewDraft(){
+  const v=Object.fromEntries(fields.map(k=>[k,$(k).value.trim()]));
+  const notes=[];
+  if(!currentText()){
+    notes.push('文章がまだありません。まず下書きを作成してください。');
+  }else{
+    if(!v.school)notes.push('教室名を確認してください。');
+    if(v.type==='event'){
+      if(!v.date)notes.push('日時が明記されているか確認してください。');
+      if(!v.place)notes.push('場所が必要な場合、明記されているか確認してください。');
+      notes.push('参加費・申し込み期限がある場合、金額と期限を確認してください。');
+    }
+    if(v.type==='closed')notes.push('休講日と振替の扱い（未定なら未定）を確認してください。');
+    if(v.target==='instagram')notes.push('公開投稿に生徒・保護者の個人情報が入っていないか確認してください。');
+    notes.push('日付・費用・場所など、AIが入力内容にない事実を補っていないか照合してください。');
+  }
+  const ul=$('reviewHints');ul.replaceChildren();
+  notes.forEach(n=>{const li=document.createElement('li');li.textContent=n;ul.appendChild(li)});
+}
+
 function getHistory(){
   try{
     const saved=JSON.parse(localStorage.getItem(KEY)||'[]');
@@ -119,7 +175,11 @@ function renderHistory(){
     actions.append(view,del);row.append(label,actions);$('historyList').append(row);
   });
 }
-function show(text){draft=text;$('output').textContent=text;$('output').classList.remove('muted')}
+function show(text,rememberPrevious=true){
+ if(rememberPrevious){const previous=currentText();undoDraft=previous&&previous!==text?previous:'';renderUndo();}
+ draft=text;$('output').textContent=text;$('output').classList.remove('muted');
+ updateCount();reviewDraft();
+}
 function currentText(){return $('output').classList.contains('muted')?'':$('output').innerText.trim()}
 function generate(){const v=Object.fromEntries(fields.map(k=>[k,$(k).value.trim()]));if(!v.info){$('info').focus();$('status').textContent='伝えたい内容を入力してください。';return}
 const greet=v.tone==='friendly'?'いつもありがとうございます！':'平素より教室の活動にご理解とご協力をいただき、誠にありがとうございます。';
@@ -140,57 +200,93 @@ if($('length').value==='short'){
 }
 show(text);$('status').textContent='下書きができました。事実関係を確認してご利用ください。'}
 
-async function createDocument(){
-  if($('mode').value==='template'){generate();return}
-  const info=$('info').value.trim();
-  if(!info){$('status').textContent='伝えたい内容を入力してください。';$('info').focus();return}
+async function invokeAI(payload,kind){
+  if(aiBusy)return;
   if(location.hostname.endsWith('.github.io')){
-    $('status').textContent='AIモードはCloudflare Pagesでの公開とAI接続後に使えます。今はテンプレートを選んでください。';
+    $('status').textContent='AIモードはCloudflare版で利用できます。テンプレートモードをお試しください。';
     return;
   }
   if(requiresTurnstile&&!turnstileToken){
-    $('status').textContent='AI生成前に「安全確認」を完了してください。認証が表示されない場合はページを再読み込みしてください。';
+    $('status').textContent='先に安全確認を完了してください。';
     return;
   }
-  const inputs={...Object.fromEntries(fields.map(k=>[k,$(k).value.trim()])),length:$('length').value,turnstileToken};
-  const button=$('generate');
-  button.disabled=true;button.textContent='AIが作成中…';
-  $('status').textContent='AIで下書きを作成しています。しばらくお待ちください。';
+  const generate=$('generate'),revise=$('revise');
+  const action=kind==='revise'?'rewrite':'generate';
+  aiBusy=true;generate.disabled=true;revise.disabled=true;
+  if(kind==='revise')$('reviewStatus').textContent='AIが文章を書き直しています…';
+  else $('status').textContent='AIで下書きを作成しています…';
+  generate.textContent=kind==='generate'?'AIが作成中…':'文章を作成する';
+  revise.textContent=kind==='revise'?'AIが書き直し中…':'AIで書き直す';
   const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),25000);
+  const timeout=setTimeout(()=>controller.abort(),30000);
   try{
     const response=await fetch('/api/generate',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(inputs),
-      signal:controller.signal
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({...payload,action,turnstileToken}),signal:controller.signal
     });
     const result=await response.json().catch(()=>null);
-    if(!response.ok)throw new Error(result?.error||('AIサーバーがエラーを返しました（'+response.status+'）'));
-    if(typeof result?.text!=='string'||!result.text.trim())throw new Error('文章を取得できませんでした。');
+    if(!response.ok)throw Error(result?.error||('サーバーエラー：'+response.status));
+    if(typeof result?.text!=='string'||!result.text.trim())throw Error('生成した文章を取得できませんでした。');
     show(result.text.trim());
-    $('status').textContent='AIで下書きを作成しました。内容と事実関係を確認してください。';
+    const message=kind==='revise'?'AIで文章を書き直しました。内容が変わっていないか確認してください。':'AIで下書きを作成しました。日時などを確認してください。';
+    if(kind==='revise')$('reviewStatus').textContent=message;
+    else $('status').textContent=message;
   }catch(error){
-    $('status').textContent=error.name==='AbortError'?'時間がかかりすぎたため停止しました。もう一度お試しください。':('AI生成できませんでした：'+error.message+' テンプレートは引き続き使えます。');
+    const message=error.name==='AbortError'?'時間がかかりすぎたため停止しました。再度お試しください。':'AI生成に失敗しました：'+error.message;
+    if(kind==='revise')$('reviewStatus').textContent=message;else $('status').textContent=message;
   }finally{
-    clearTimeout(timeout);button.disabled=false;button.textContent='文章を作成する';
+    clearTimeout(timeout);aiBusy=false;generate.disabled=false;revise.disabled=false;
+    generate.textContent='文章を作成する';revise.textContent='AIで書き直す';
     if(requiresTurnstile){
       turnstileToken='';
       if(turnstileReady&&window.turnstile&&turnstileWidget!==null){
-        window.turnstile.reset(turnstileWidget);
+        try{window.turnstile.reset(turnstileWidget)}catch{}
       }
     }
   }
 }
+async function createDocument(){
+  if($('mode').value==='template'){generate();return}
+  if(!$('info').value.trim()){
+    $('status').textContent='伝えたい内容を入力してください。';$('info').focus();return;
+  }
+  const inputs={...Object.fromEntries(fields.map(k=>[k,$(k).value.trim()])),length:$('length').value};
+  await invokeAI(inputs,'generate');
+}
+async function reviseDocument(){
+  const original=currentText();
+  if(!original){$('reviewStatus').textContent='書き直す文章を先に作成してください。';return}
+  if(original.length>4000){$('reviewStatus').textContent='書き直しは4,000文字以内で利用できます。';return}
+  const inputs={...Object.fromEntries(fields.map(k=>[k,$(k).value.trim()])),length:$('length').value,
+    draft:original,revision:$('revision').value};
+  await invokeAI(inputs,'revise');
+}
 
 $('generate').addEventListener('click',createDocument);
+$('revise').addEventListener('click',reviseDocument);
+$('undo').addEventListener('click',()=>{
+  if(!undoDraft)return;
+  const old=undoDraft;undoDraft='';show(old,false);renderUndo();
+  $('status').textContent='直前の文章に戻しました。';
+});
+$('download').addEventListener('click',()=>{
+  const text=currentText();if(!text){$('status').textContent='先に文章を作成してください。';return}
+  const file=new Blob(['\uFEFF'+text],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(file);
+  const link=document.createElement('a');link.href=url;link.download='otayori-'+new Date().toISOString().slice(0,10)+'.txt';
+  document.body.appendChild(link);link.click();link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  $('status').textContent='文章をテキストファイルに保存しました。';
+});
+$('output').addEventListener('input',()=>{updateCount();reviewDraft()});
+fields.forEach(id=>$(id).addEventListener('change',reviewDraft));
 $('reset').addEventListener('click',()=>{fields.forEach(id=>{if($(id).tagName==='SELECT')$(id).selectedIndex=0;else $(id).value=''});$('status').textContent='入力をクリアしました。'});
 $('copy').addEventListener('click',async()=>{if(!currentText())return $('status').textContent='先に文章を作成してください。';try{await navigator.clipboard.writeText(currentText());$('status').textContent='文章をコピーしました。'}catch{$('status').textContent='コピーできませんでした。文章を選択してコピーしてください。'}});
 $('save').addEventListener('click',()=>{if(!currentText())return $('status').textContent='先に文章を作成してください。';try{const arr=getHistory();arr.unshift({title:$('school').value.trim()||'教室のお知らせ',date:new Date().toLocaleDateString('ja-JP'),text:currentText()});localStorage.setItem(KEY,JSON.stringify(arr.slice(0,20)));renderHistory();$('status').textContent='履歴を保存しました。'}catch{$('status').textContent='保存できませんでした。ブラウザの設定をご確認ください。'}});
 $('clearHistory').addEventListener('click',()=>{if(!confirm('保存した履歴をすべて削除しますか？'))return;localStorage.removeItem(KEY);renderHistory();$('status').textContent='履歴を削除しました。'});
 renderHistory();
 
-const remembered=['school','target','tone','mode','length'];
+const remembered=['school','schoolType','target','tone','mode','length'];
 function restorePrefs(){
  try{
   const saved=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null');
@@ -228,6 +324,7 @@ document.querySelectorAll('[data-example]').forEach(button=>{
  });
 });
 restorePrefs();
+reviewDraft();
 
 async function loadTurnstile(sitekey){
   const script=document.createElement('script');
