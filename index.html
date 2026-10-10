@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="description" content="個人教室のお知らせ・休講連絡・SNS投稿を簡単に作成できる無料の文章作成ツール。"/>
+<title>おたよりAI | 教室のお知らせをかんたん作成</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;color:#20332d;background:#f5f9f5}*{box-sizing:border-box}body{margin:0}header{background:#fff;border-bottom:1px solid #dae8de;padding:17px max(20px,calc((100vw - 1080px)/2));display:flex;justify-content:space-between;align-items:center}.logo{font-size:22px;font-weight:800;color:#207756}.pill{background:#e7f5ea;border-radius:50px;padding:6px 12px;color:#207756;font-size:12px}main{max-width:1080px;margin:auto;padding:30px 18px 65px}.hero{text-align:center;margin:12px auto 28px}.hero h1{font-size:clamp(26px,4vw,42px);margin:8px}.hero p{color:#64756c;line-height:1.7}.layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{background:white;padding:25px;border-radius:18px;box-shadow:0 5px 22px #1635270b;border:1px solid #e1ebe4}h2{font-size:20px;margin:0 0 20px}label{display:block;font-weight:650;font-size:14px;margin:13px 0 6px}input,select,textarea{display:block;width:100%;font:inherit;border:1px solid #cadbd0;border-radius:9px;padding:11px;background:white;color:#20332d}textarea{resize:vertical;min-height:118px}button{font:inherit;cursor:pointer;border:0;border-radius:9px;padding:11px 15px;font-weight:700}.primary{background:#227c57;color:white}.secondary{background:#e8f5ec;color:#176b49}.btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.output{white-space:pre-wrap;line-height:1.9;min-height:285px;background:#f8fbf8;border:1px solid #e0ece3;padding:16px;border-radius:12px}.muted{color:#73887c}.history{margin-top:20px}.history-item{display:flex;justify-content:space-between;gap:8px;border-top:1px solid #e4eee7;padding:12px 0}.history-item button{padding:5px 10px}.notice{font-size:13px;color:#62796b;line-height:1.7;margin-top:12px}footer{text-align:center;color:#789087;font-size:12px;padding:12px}@media(max-width:720px){.layout{grid-template-columns:1fr}main{padding-top:18px}.panel{padding:18px}header{padding:15px 18px}}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #81cfa4}
+</style>
+</head>
+<body>
+<header><div class="logo">✉ おたよりAI</div><div class="pill">無料お試し版</div></header>
+<main>
+<div class="hero"><h1>教室のお知らせを、もっとかんたんに。</h1><p>ピアノ・英会話・スポーツ教室などの連絡文をすばやく下書き。<br>文章を確認・編集して、そのままコピーできます。</p></div>
+<div class="layout">
+<section class="panel"><h2>✍ 文章の内容を入力</h2>
+<label for="school">教室名</label><input id="school" placeholder="例：みどりピアノ教室" maxlength="80"/>
+<label for="type">お知らせの種類</label><select id="type"><option value="event">発表会・イベント</option><option value="closed">休講・振替</option><option value="monthly">月のおたより</option><option value="notice">一般のお知らせ</option></select>
+<label for="target">送る相手・掲載先</label><select id="target"><option value="parent">保護者向け</option><option value="line">LINE用</option><option value="instagram">Instagram用</option></select>
+<label for="tone">文章の雰囲気</label><select id="tone"><option value="polite">丁寧</option><option value="friendly">親しみやすい</option></select>
+<label for="date">日時（任意）</label><input id="date" placeholder="例：11月15日 13:00〜"/>
+<label for="place">場所（任意）</label><input id="place" placeholder="例：市民ホール"/>
+<label for="info">伝えたい内容 <span style="color:#a63a3a">*</span></label><textarea id="info" placeholder="例：参加費2,000円。持ち物は楽譜。申し込みは11月1日まで。"></textarea>
+<div class="btns"><button class="primary" id="generate">文章を作成する</button><button class="secondary" id="reset">入力をクリア</button></div>
+<p class="notice">現在はAI APIを使わないテンプレート式の無料版です。入力は外部サーバーに送信しません。生徒の氏名・住所など個人情報は入力しないでください。</p>
+</section>
+<section class="panel"><h2>📄 作成した文章</h2><div id="output" class="output muted" aria-live="polite">左のフォームに入力して「文章を作成する」を押してください。</div>
+<div class="btns"><button class="primary" id="copy">文章をコピー</button><button class="secondary" id="save">履歴に保存</button></div>
+<p class="notice" id="status" aria-live="polite">文章は編集できます。コピー前に日付や事実関係を確認してください。</p>
+<div class="history"><h2>🕒 保存した履歴</h2><div id="historyList" class="muted">履歴はまだありません。</div><button class="secondary" id="clearHistory" style="margin-top:10px">履歴をすべて削除</button><p class="notice">履歴はこの端末のブラウザ内にのみ保存されます。最大20件まで。</p></div>
+</section></div>
+</main><footer>© おたよりAI ・ 文章の最終確認は利用者自身で行ってください。</footer>
+<script>
+const $=id=>document.getElementById(id);
+const fields=['school','type','target','tone','date','place','info'];
+const KEY='otayori-ai-history-v1';
+let draft='';
+function getHistory(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []}}
+function renderHistory(){let history=getHistory();$('historyList').classList.toggle('muted',history.length===0);$('historyList').replaceChildren();if(!history.length){$('historyList').textContent='履歴はまだありません。';return}history.forEach((h,i)=>{const row=document.createElement('div');row.className='history-item';const text=document.createElement('span');text.textContent=h.title+' · '+h.date;const b=document.createElement('button');b.className='secondary';b.textContent='表示';b.addEventListener('click',()=>show(h.text));row.append(text,b);$('historyList').append(row)})}
+function show(text){draft=text;$('output').textContent=text;$('output').classList.remove('muted')}
+function generate(){const v=Object.fromEntries(fields.map(k=>[k,$(k).value.trim()]));if(!v.info){$('info').focus();$('status').textContent='伝えたい内容を入力してください。';return}
+const greet=v.tone==='friendly'?'いつもありがとうございます！':'平素より教室の活動にご理解とご協力をいただき、誠にありがとうございます。';
+const opener={event:'発表会・イベントのご案内',closed:'休講・振替のお知らせ',monthly:'今月のおたより',notice:'教室からのお知らせ'}[v.type];
+const body={event:'下記のとおりイベントを予定しております。',closed:'教室の予定について、下記のとおりご案内いたします。',monthly:'今月の教室からのお知らせをお届けします。',notice:'教室からのご連絡です。'}[v.type];
+const ending=v.tone==='friendly'?'ご確認よろしくお願いします！':'ご確認のほど、よろしくお願いいたします。';
+let text;
+if(v.target==='instagram'){text='【'+opener+'】\n\n'+(v.school||'教室')+'からのお知らせです！\n\n'+(v.date?'📅 '+v.date+'\n':'')+(v.place?'📍 '+v.place+'\n':'')+'\n'+v.info+'\n\n'+ending+'\n\n#習い事 #教室のお知らせ'}
+else if(v.target==='line'){text='【'+opener+'】\n'+(v.school?v.school+'より\n':'')+'\n'+greet+'\n'+body+'\n'+(v.date?'\n日時：'+v.date:'')+(v.place?'\n場所：'+v.place:'')+'\n\n'+v.info+'\n\n'+ending}
+else{text=(v.school?v.school+'\n':'')+'【'+opener+'】\n\n保護者の皆さま\n\n'+greet+'\n'+body+'\n'+(v.date?'\n日時：'+v.date:'')+(v.place?'\n場所：'+v.place:'')+'\n\n'+v.info+'\n\n'+ending+'\n\n'+(v.school||'教室')}
+show(text);$('status').textContent='下書きができました。事実関係を確認してご利用ください。'}
+$('generate').addEventListener('click',generate);
+$('reset').addEventListener('click',()=>{fields.forEach(id=>{if($(id).tagName==='SELECT')$(id).selectedIndex=0;else $(id).value=''});$('status').textContent='入力をクリアしました。'});
+$('copy').addEventListener('click',async()=>{if(!draft)return $('status').textContent='先に文章を作成してください。';try{await navigator.clipboard.writeText(draft);$('status').textContent='文章をコピーしました。'}catch{$('status').textContent='コピーできませんでした。文章を選択してコピーしてください。'}});
+$('save').addEventListener('click',()=>{if(!draft)return $('status').textContent='先に文章を作成してください。';try{const arr=getHistory();arr.unshift({title:$('school').value.trim()||'教室のお知らせ',date:new Date().toLocaleDateString('ja-JP'),text:draft});localStorage.setItem(KEY,JSON.stringify(arr.slice(0,20)));renderHistory();$('status').textContent='履歴を保存しました。'}catch{$('status').textContent='保存できませんでした。ブラウザの設定をご確認ください。'}});
+$('clearHistory').addEventListener('click',()=>{if(!confirm('保存した履歴をすべて削除しますか？'))return;localStorage.removeItem(KEY);renderHistory();$('status').textContent='履歴を削除しました。'});
+renderHistory();
+</script>
+</body></html>
