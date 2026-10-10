@@ -52,3 +52,6 @@ Cloudflare Pagesの本番環境に Workers AI バインディング `AI` を保�
 5. サイトを開くと安全確認が現れ、成功するとサーバー側のSiteverify検証後にAI生成できる。使い終わったトークンは毎回更新される。
 
 **片方のキーだけ**設定された場合は、誤った認証回避を防ぐためにサーバーが503を返し、生成が止まります。設定前は従来どおりAI生成が可能です。Turnstileはbot対策の一部で、無制限のアクセスやAI消費を保証するものではありません。別途Cloudflareのリクエスト制限・消費モニタリングも必要です。
+
+## Cloudflare Pages の再デプロイについて
+GitHub連携で作成した Pages プロジェクトは、production branch `main` への新規コミットで自動デプロイされます（自動デプロイが有効の場合）。Turnstile の `TURNSTILE_SITE_KEY` と `TURNSTILE_SECRET_KEY` を Production に保存した後、Cloudflare の **Workers & Pages → otayori-ai → Deployments** で、この README 更新コミットに対応する新しいデプロイが Success か確認してください。コード側に秘密鍵を記載しないでください。
