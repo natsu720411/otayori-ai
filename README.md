@@ -93,3 +93,9 @@ Cloudflare側で `AI_RATE_DB`（D1バインディング）と `AI_RATE_SALT`（S
 - AIで文章生成を1回実行し、既存のTurnstile認証とD1の両方が正常に動くことを確認。
 - `rateLimitEnabled: false` ならバインディングとSecretの設定先がProductionか確認。DBを作成するだけでは制限は有効になりません。
 - `rateLimitMisconfigured: true` なら片方の設定が不足しています。両方の設定を揃えてから再デプロイ。
+
+## 検索流入を目的とした独立したガイド（2026年10月）
+- `piano-recital.html`：ピアノ発表会の案内文とLINE文面、送信前の確認事項。
+- `lesson-cancellation.html`：予定休講、急な休講、振替日が確定している場合の例文。
+- 両ページから `/?sample=...` で入力例を文章作成フォームにセットする。許可済みの固定サンプルのみ使い、URLパラメータの自由入力は行わない。AI生成を自動実行せず、訪問者が日時・金額・場所を確認してから生成する。
+- `guide.html` とトップページから相互リンク、`sitemap.xml` に追加。検索順位・流入効果は保証されないため、Google Search Consoleで実データを確認して改善する。

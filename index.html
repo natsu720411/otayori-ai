@@ -57,6 +57,11 @@ a{color:#176b49}a:hover{text-decoration:none}
 .history-tools input{flex:1;min-width:150px;max-width:360px}
 .history-counter,#limitStatus{font-size:12px;color:#557666;line-height:1.7}
 .favorite-button[aria-pressed="true"]{background:#fff2d7;color:#865714}
+.topic-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.topic-links a{border:1px solid #dce9de;border-radius:12px;padding:14px 16px;background:#f6fbf7;text-decoration:none;color:#176b49;display:block}
+.topic-links a:hover{background:#e9f6ec}
+.topic-links small{display:block;font-size:12px;color:#657a6c;line-height:1.7;margin-top:4px}
+@media(max-width:720px){.topic-links{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -77,7 +82,7 @@ a{color:#176b49}a:hover{text-decoration:none}
 <label for="date">日時（任意）</label><input id="date" maxlength="120" placeholder="例：11月15日 13:00〜"/>
 <label for="place">場所（任意）</label><input id="place" maxlength="120" placeholder="例：市民ホール"/>
 <div class="shortcut-area"><p class="help">入力例から試す</p><div class="btns compact"><button type="button" class="secondary example" data-example="event">発表会</button><button type="button" class="secondary example" data-example="closed">休講</button><button type="button" class="secondary example" data-example="monthly">月のおたより</button></div></div>
-<label for="info">伝えたい内容 <span style="color:#a63a3a">*</span></label><textarea id="info" maxlength="1000" placeholder="例：参加費2,000円。持ち物は楽譜。申し込みは11月1日まで。"></textarea>
+<label for="info">伝えたい内容 <span style="color:#a63a3a">*</span></label><textarea id="info" maxlength="1000" placeholder="例：参加費2,000円。持ち物は楽譜。申し込みは11月1日まで。"></textarea><p class="help" id="sampleNote" aria-live="polite"></p>
 <div class="btns"><button class="primary" id="generate">文章を作成する</button><button class="secondary" id="reset">入力をクリア</button></div>
 <div class="verify-box" id="turnstilePanel" hidden>
 <strong>安全確認</strong>
@@ -111,6 +116,10 @@ a{color:#176b49}a:hover{text-decoration:none}
 <div class="info-card"><h3>月のおたより</h3><p>教室の近況や今月のお知らせを、LINE・紙配布・SNS用に調整。</p></div>
 </div>
 <p><a href="./guide.html">教室のお知らせの書き方・具体的な例文を見る →</a></p>
+<div class="topic-links" aria-label="目的別の例文ガイド">
+ <a href="./piano-recital.html"><strong>ピアノ発表会の案内文</strong><small>保護者向け・LINE用の文例と確認項目</small></a>
+ <a href="./lesson-cancellation.html"><strong>休講・振替の連絡文</strong><small>急な休講・予定休講・振替未定の例文</small></a>
+</div>
 <p>※ AIが入力していない情報を補ってしまうことがあります。日付・会場・費用・連絡先は公開前に必ずご確認ください。</p>
 </section>
 </main><footer>© おたよりAI ・ <a href="./privacy.html">プライバシー</a> ・ <a href="./guide.html">使い方</a> ・ 文章の最終確認は利用者自身で行ってください。</footer>
@@ -342,6 +351,36 @@ document.querySelectorAll('[data-example]').forEach(button=>{
  });
 });
 restorePrefs();
+// Topic pages use an explicit, allowlisted sample id. No visitor-supplied free text is inserted.
+const samplePresets={
+ 'piano-recital':{
+  schoolType:'piano',type:'event',target:'parent',tone:'polite',length:'normal',
+  date:'11月15日 13:00から',place:'市民ホール',
+  info:'ピアノ発表会を開催します。参加費は2,000円、申込期限は11月1日です。開演10分前までに集合し、当日は楽譜を持参してください。'
+ },
+ 'piano-line':{
+  schoolType:'piano',type:'event',target:'line',tone:'friendly',length:'short',
+  date:'11月15日 13:00から',place:'市民ホール',
+  info:'ピアノ発表会のご案内です。参加費は2,000円、申込期限は11月1日です。詳しい案内は別途お送りします。'
+ },
+ 'lesson-closed':{
+  schoolType:'general',type:'closed',target:'parent',tone:'polite',length:'normal',
+  date:'11月3日',place:'',
+  info:'講師の都合により11月3日のレッスンを休講します。振替については日程が決まり次第ご案内します。'
+ },
+ 'lesson-line':{
+  schoolType:'general',type:'closed',target:'line',tone:'polite',length:'short',
+  date:'11月3日',place:'',
+  info:'11月3日のレッスンは休講です。振替の日程が決まり次第ご案内します。'
+ }
+};
+const sampleKey=new URLSearchParams(location.search).get('sample');
+if(Object.prototype.hasOwnProperty.call(samplePresets,sampleKey)){
+ const sample=samplePresets[sampleKey];
+ Object.entries(sample).forEach(([id,value])=>{if($(id))$(id).value=value});
+ $('sampleNote').textContent='例文の入力例をセットしました。架空の日時・金額・会場を実際の情報に変更してから作成してください。';
+ $('status').textContent='入力例をセットしました。内容を確認して「文章を作成する」を押してください。';
+}
 reviewDraft();
 
 async function loadTurnstile(sitekey){
