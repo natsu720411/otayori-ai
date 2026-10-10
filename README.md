@@ -108,3 +108,6 @@ Cloudflare側で `AI_RATE_DB`（D1バインディング）と `AI_RATE_SALT`（S
 - `plans.html` は現在無料・将来の有料機能候補・料金未定・申し込み不可を明示。誤認防止のため `noindex,follow` を指定し、サイトマップには載せない。
 - `GROWTH_PLAN.md` に、実データに基づく集客と課金準備のチェックリストを記載。
 - Cloudflare Web Analytics はこのコミットでは**自動有効化されない**。Cloudflareダッシュボードで別途有効化したうえで、数字を見て改善方針を調整する。
+
+## Cloudflare Pagesの正規URLの統一
+Cloudflare Pages はHTMLページへの `/guide.html` などのアクセスを拡張子なしの `/guide` にリダイレクトします。検索エンジンに転送前URLを案内しないよう、内部リンク、canonical、サイトマップは `/guide` の形式で統一しました。GitHub内の実ファイル名は引き続き `guide.html` 等です。

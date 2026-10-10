@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url><loc>https://otayori-ai.pages.dev/</loc></url>
-<url><loc>https://otayori-ai.pages.dev/guide.html</loc></url>
-<url><loc>https://otayori-ai.pages.dev/privacy.html</loc></url>
-<url><loc>https://otayori-ai.pages.dev/piano-recital.html</loc></url>
-<url><loc>https://otayori-ai.pages.dev/lesson-cancellation.html</loc></url>
-<url><loc>https://otayori-ai.pages.dev/english-trial.html</loc></url>
-<url><loc>https://otayori-ai.pages.dev/monthly-newsletter.html</loc></url>
+<url><loc>https://otayori-ai.pages.dev/guide</loc></url>
+<url><loc>https://otayori-ai.pages.dev/privacy</loc></url>
+<url><loc>https://otayori-ai.pages.dev/piano-recital</loc></url>
+<url><loc>https://otayori-ai.pages.dev/lesson-cancellation</loc></url>
+<url><loc>https://otayori-ai.pages.dev/english-trial</loc></url>
+<url><loc>https://otayori-ai.pages.dev/monthly-newsletter</loc></url>
 </urlset>
