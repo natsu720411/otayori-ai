@@ -6,6 +6,13 @@
 <title>おたよりAI | 教室のお知らせをかんたん作成</title>
 <style>
 :root{font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;color:#20332d;background:#f5f9f5}*{box-sizing:border-box}body{margin:0}header{background:#fff;border-bottom:1px solid #dae8de;padding:17px max(20px,calc((100vw - 1080px)/2));display:flex;justify-content:space-between;align-items:center}.logo{font-size:22px;font-weight:800;color:#207756}.pill{background:#e7f5ea;border-radius:50px;padding:6px 12px;color:#207756;font-size:12px}main{max-width:1080px;margin:auto;padding:30px 18px 65px}.hero{text-align:center;margin:12px auto 28px}.hero h1{font-size:clamp(26px,4vw,42px);margin:8px}.hero p{color:#64756c;line-height:1.7}.layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{background:white;padding:25px;border-radius:18px;box-shadow:0 5px 22px #1635270b;border:1px solid #e1ebe4}h2{font-size:20px;margin:0 0 20px}label{display:block;font-weight:650;font-size:14px;margin:13px 0 6px}input,select,textarea{display:block;width:100%;font:inherit;border:1px solid #cadbd0;border-radius:9px;padding:11px;background:white;color:#20332d}textarea{resize:vertical;min-height:118px}button{font:inherit;cursor:pointer;border:0;border-radius:9px;padding:11px 15px;font-weight:700}.primary{background:#227c57;color:white}.secondary{background:#e8f5ec;color:#176b49}.btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.output{white-space:pre-wrap;line-height:1.9;min-height:285px;background:#f8fbf8;border:1px solid #e0ece3;padding:16px;border-radius:12px}.muted{color:#73887c}.history{margin-top:20px}.history-item{display:flex;justify-content:space-between;gap:8px;border-top:1px solid #e4eee7;padding:12px 0}.history-item button{padding:5px 10px}.notice{font-size:13px;color:#62796b;line-height:1.7;margin-top:12px}footer{text-align:center;color:#789087;font-size:12px;padding:12px}@media(max-width:720px){.layout{grid-template-columns:1fr}main{padding-top:18px}.panel{padding:18px}header{padding:15px 18px}}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #81cfa4}
+
+.compact{margin-top:9px;align-items:center}.compact button{font-size:13px;padding:8px 10px}
+.help{font-size:12px;color:#617668;line-height:1.7;margin:7px 0}
+.shortcut-area{margin-top:10px}.shortcut-area p{margin:4px 0}
+#output:focus{outline:3px solid #81cfa4}.history-item span{flex:1;min-width:0;overflow-wrap:anywhere}
+.actions{display:flex;align-items:center;gap:6px}.actions button{white-space:nowrap}
+@media(max-width:480px){.history-item{align-items:flex-start;flex-direction:column}.actions{align-self:flex-end}}
 </style>
 </head>
 <body>
@@ -15,12 +22,16 @@
 <div class="layout">
 <section class="panel"><h2>✍ 文章の内容を入力</h2>
 <label for="school">教室名</label><input id="school" placeholder="例：みどりピアノ教室" maxlength="80"/>
+<div class="btns compact"><button type="button" id="savePrefs" class="secondary">教室の設定をこの端末に保存</button><button type="button" id="clearPrefs" class="secondary">設定を削除</button></div>
+<p class="help" id="presetStatus" aria-live="polite">教室名・文体・送信先・文章の長さのみ保存します。連絡内容は保存しません。</p>
 <label for="type">お知らせの種類</label><select id="type"><option value="event">発表会・イベント</option><option value="closed">休講・振替</option><option value="monthly">月のおたより</option><option value="notice">一般のお知らせ</option></select>
 <label for="target">送る相手・掲載先</label><select id="target"><option value="parent">保護者向け</option><option value="line">LINE用</option><option value="instagram">Instagram用</option></select>
 <label for="tone">文章の雰囲気</label><select id="tone"><option value="polite">丁寧</option><option value="friendly">親しみやすい</option></select>
-<label for="mode">文章作成モード</label><select id="mode"><option value="template">テンプレート（いつでも利用可能）</option><option value="ai">AIで文章を生成（Cloudflare公開後）</option></select>
+<label for="mode">文章作成モード</label><select id="mode"><option value="template">テンプレート（いつでも利用可能）</option><option value="ai">AIで文章を生成（Cloudflare版）</option></select>
+<label for="length">文章の長さ</label><select id="length"><option value="normal">標準</option><option value="short">短め（要点だけ）</option><option value="long">詳しく</option></select>
 <label for="date">日時（任意）</label><input id="date" placeholder="例：11月15日 13:00〜"/>
 <label for="place">場所（任意）</label><input id="place" placeholder="例：市民ホール"/>
+<div class="shortcut-area"><p class="help">入力例から試す</p><div class="btns compact"><button type="button" class="secondary example" data-example="event">発表会</button><button type="button" class="secondary example" data-example="closed">休講</button><button type="button" class="secondary example" data-example="monthly">月のおたより</button></div></div>
 <label for="info">伝えたい内容 <span style="color:#a63a3a">*</span></label><textarea id="info" maxlength="1000" placeholder="例：参加費2,000円。持ち物は楽譜。申し込みは11月1日まで。"></textarea>
 <div class="btns"><button class="primary" id="generate">文章を作成する</button><button class="secondary" id="reset">入力をクリア</button></div>
 <p class="notice">テンプレートモードは端末内で動作します。AIモードはCloudflare公開後に利用可能となり、入力内容がAI処理に送信されます。生徒の氏名・住所など個人情報は入力しないでください。</p>
@@ -28,17 +39,43 @@
 <section class="panel"><h2>📄 作成した文章</h2><div id="output" class="output muted" contenteditable="true" role="textbox" aria-label="作成した文章（直接編集できます）" aria-multiline="true" aria-live="polite">左のフォームに入力して「文章を作成する」を押してください。</div>
 <div class="btns"><button class="primary" id="copy">文章をコピー</button><button class="secondary" id="save">履歴に保存</button></div>
 <p class="notice" id="status" aria-live="polite">生成した文章はここで直接編集できます。コピー前に日時・料金などを確認してください。</p>
-<div class="history"><h2>🕒 保存した履歴</h2><div id="historyList" class="muted">履歴はまだありません。</div><button class="secondary" id="clearHistory" style="margin-top:10px">履歴をすべて削除</button><p class="notice">履歴はこの端末のブラウザ内にのみ保存されます。最大20件まで。</p></div>
+<div class="history"><h2>🕒 保存した履歴</h2><div id="historyList" class="muted">履歴はまだありません。</div><button class="secondary" id="clearHistory" style="margin-top:10px">履歴をすべて削除</button><p class="notice">履歴はこの端末のブラウザ内にのみ保存されます。最大20件まで。各履歴を個別に削除できます。</p></div>
 </section></div>
 </main><footer>© おたよりAI ・ 文章の最終確認は利用者自身で行ってください。</footer>
 <script>
 const $=id=>document.getElementById(id);
 const fields=['school','type','target','tone','date','place','info'];
 const KEY='otayori-ai-history-v1';
-const MAX_INPUT=1000;
+const SETTINGS_KEY='otayori-ai-settings-v1';
 let draft='';
-function getHistory(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []}}
-function renderHistory(){let history=getHistory();$('historyList').classList.toggle('muted',history.length===0);$('historyList').replaceChildren();if(!history.length){$('historyList').textContent='履歴はまだありません。';return}history.forEach((h,i)=>{const row=document.createElement('div');row.className='history-item';const text=document.createElement('span');text.textContent=h.title+' · '+h.date;const b=document.createElement('button');b.className='secondary';b.textContent='表示';b.addEventListener('click',()=>show(h.text));row.append(text,b);$('historyList').append(row)})}
+function getHistory(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(KEY)||'[]');
+    return Array.isArray(saved)?saved.filter(h=>h&&typeof h.text==='string'&&typeof h.title==='string').slice(0,20):[];
+  }catch{return []}
+}
+function renderHistory(){
+  const history=getHistory();
+  $('historyList').classList.toggle('muted',history.length===0);
+  $('historyList').replaceChildren();
+  if(!history.length){$('historyList').textContent='履歴はまだありません。';return}
+  history.forEach((h,i)=>{
+    const row=document.createElement('div');row.className='history-item';
+    const label=document.createElement('span');
+    label.textContent=h.title+' · '+(h.date||'日付不明');
+    const actions=document.createElement('div');actions.className='actions';
+    const view=document.createElement('button');view.className='secondary';view.type='button';view.textContent='表示';
+    view.addEventListener('click',()=>{show(h.text);$('output').scrollIntoView({behavior:'smooth',block:'center'});});
+    const del=document.createElement('button');del.className='secondary';del.type='button';del.textContent='削除';
+    del.setAttribute('aria-label',(h.title||'履歴')+'を削除');
+    del.addEventListener('click',()=>{
+      const items=getHistory();items.splice(i,1);
+      try{localStorage.setItem(KEY,JSON.stringify(items));renderHistory();$('status').textContent='選択した履歴を削除しました。';}
+      catch{$('status').textContent='履歴を削除できませんでした。'}
+    });
+    actions.append(view,del);row.append(label,actions);$('historyList').append(row);
+  });
+}
 function show(text){draft=text;$('output').textContent=text;$('output').classList.remove('muted')}
 function currentText(){return $('output').classList.contains('muted')?'':$('output').innerText.trim()}
 function generate(){const v=Object.fromEntries(fields.map(k=>[k,$(k).value.trim()]));if(!v.info){$('info').focus();$('status').textContent='伝えたい内容を入力してください。';return}
@@ -50,6 +87,14 @@ let text;
 if(v.target==='instagram'){text='【'+opener+'】\n\n'+(v.school||'教室')+'からのお知らせです！\n\n'+(v.date?'📅 '+v.date+'\n':'')+(v.place?'📍 '+v.place+'\n':'')+'\n'+v.info+'\n\n'+ending+'\n\n#習い事 #教室のお知らせ'}
 else if(v.target==='line'){text='【'+opener+'】\n'+(v.school?v.school+'より\n':'')+'\n'+greet+'\n'+body+'\n'+(v.date?'\n日時：'+v.date:'')+(v.place?'\n場所：'+v.place:'')+'\n\n'+v.info+'\n\n'+ending}
 else{text=(v.school?v.school+'\n':'')+'【'+opener+'】\n\n保護者の皆さま\n\n'+greet+'\n'+body+'\n'+(v.date?'\n日時：'+v.date:'')+(v.place?'\n場所：'+v.place:'')+'\n\n'+v.info+'\n\n'+ending+'\n\n'+(v.school||'教室')}
+if($('length').value==='short'){
+ text=text.replace(/^平素より教室の活動にご理解とご協力をいただき、誠にありがとうございます。\n?/m,'')
+          .replace(/^いつもありがとうございます！\n?/m,'')
+          .replace(/下記のとおりイベントを予定しております。\n?|教室の予定について、下記のとおりご案内いたします。\n?|今月の教室からのお知らせをお届けします。\n?|教室からのご連絡です。\n?/g,'')
+          .replace(/\n{3,}/g,'\n\n').trim();
+}else if($('length').value==='long'&&v.target!=='instagram'){
+ text+='\n\nご不明な点がございましたら、教室までお問い合わせください。';
+}
 show(text);$('status').textContent='下書きができました。事実関係を確認してご利用ください。'}
 
 async function createDocument(){
@@ -60,7 +105,7 @@ async function createDocument(){
     $('status').textContent='AIモードはCloudflare Pagesでの公開とAI接続後に使えます。今はテンプレートを選んでください。';
     return;
   }
-  const inputs=Object.fromEntries(fields.map(k=>[k,$(k).value.trim()]));
+  const inputs={...Object.fromEntries(fields.map(k=>[k,$(k).value.trim()])),length:$('length').value};
   const button=$('generate');
   button.disabled=true;button.textContent='AIが作成中…';
   $('status').textContent='AIで下書きを作成しています。しばらくお待ちください。';
@@ -91,5 +136,45 @@ $('copy').addEventListener('click',async()=>{if(!currentText())return $('status'
 $('save').addEventListener('click',()=>{if(!currentText())return $('status').textContent='先に文章を作成してください。';try{const arr=getHistory();arr.unshift({title:$('school').value.trim()||'教室のお知らせ',date:new Date().toLocaleDateString('ja-JP'),text:currentText()});localStorage.setItem(KEY,JSON.stringify(arr.slice(0,20)));renderHistory();$('status').textContent='履歴を保存しました。'}catch{$('status').textContent='保存できませんでした。ブラウザの設定をご確認ください。'}});
 $('clearHistory').addEventListener('click',()=>{if(!confirm('保存した履歴をすべて削除しますか？'))return;localStorage.removeItem(KEY);renderHistory();$('status').textContent='履歴を削除しました。'});
 renderHistory();
+
+const remembered=['school','target','tone','mode','length'];
+function restorePrefs(){
+ try{
+  const saved=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null');
+  if(!saved||typeof saved!=='object')return;
+  remembered.forEach(id=>{
+    const input=$(id), value=saved[id];
+    if(typeof value!=='string')return;
+    if(input.tagName==='SELECT'){
+      if(Array.from(input.options).some(option=>option.value===value))input.value=value;
+    }else if(value.length<=80){input.value=value}
+  });
+  $('presetStatus').textContent='保存した教室の設定を読み込みました。この端末だけで利用できます。';
+ }catch{$('presetStatus').textContent='保存した設定は読み込めませんでした。'}
+}
+$('savePrefs').addEventListener('click',()=>{
+ const data=Object.fromEntries(remembered.map(id=>[id,$(id).value]));
+ try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(data));$('presetStatus').textContent='教室の設定を保存しました。次回から自動入力されます。'}
+ catch{$('presetStatus').textContent='保存できませんでした。ブラウザの設定をご確認ください。'}
+});
+$('clearPrefs').addEventListener('click',()=>{
+ try{localStorage.removeItem(SETTINGS_KEY);$('presetStatus').textContent='保存した設定を削除しました（現在の入力欄はそのままです）。'}
+ catch{$('presetStatus').textContent='保存した設定を削除できませんでした。'}
+});
+const examples={
+ event:{type:'event',date:'11月15日 13:00から',place:'市民ホール',info:'発表会を開催します。参加費は2,000円。お申し込みは11月1日までです。'},
+ closed:{type:'closed',date:'11月3日',place:'',info:'祝日のため通常レッスンはお休みです。振替日については後日ご案内します。'},
+ monthly:{type:'monthly',date:'11月',place:'',info:'今月は基本練習を大切にします。ご家庭でも無理のない範囲で練習をお願いします。'}
+};
+document.querySelectorAll('[data-example]').forEach(button=>{
+ button.addEventListener('click',()=>{
+  const sample=examples[button.dataset.example];
+  if(!sample)return;
+  ['type','date','place','info'].forEach(id=>$(id).value=sample[id]);
+  $('status').textContent='架空の入力例を設定しました。「文章を作成する」を押してください。';
+ });
+});
+restorePrefs();
+
 </script>
 </body></html>
