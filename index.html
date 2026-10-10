@@ -52,6 +52,11 @@ a{color:#176b49}a:hover{text-decoration:none}
  body,main,.layout,.panel{background:white!important;box-shadow:none!important;border:0!important;padding:0!important;margin:0!important}
  .layout{display:block!important}.output{border:0!important;min-height:0!important;white-space:pre-wrap!important;color:black!important}
 }
+
+.history-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px}
+.history-tools input{flex:1;min-width:150px;max-width:360px}
+.history-counter,#limitStatus{font-size:12px;color:#557666;line-height:1.7}
+.favorite-button[aria-pressed="true"]{background:#fff2d7;color:#865714}
 </style>
 </head>
 <body>
@@ -79,7 +84,7 @@ a{color:#176b49}a:hover{text-decoration:none}
 <p class="verify-note">AIを安全に提供するため、生成前に簡単な確認をお願いしています。</p>
 <div id="turnstileWidget" aria-label="自動アクセス防止のための認証"></div>
 </div>
-<p class="verify-note" id="verificationNote" aria-live="polite"></p>
+<p class="verify-note" id="verificationNote" aria-live="polite"></p><p id="limitStatus" aria-live="polite"></p>
 <p class="notice">テンプレートモードは端末内で作成します。AIモードは入力内容をCloudflareのAIへ送信します。生徒の氏名・住所など個人情報は入力しないでください。詳しくは<a href="./privacy.html">プライバシー案内</a>をご確認ください。</p>
 </section>
 <section class="panel"><h2>📄 作成した文章</h2><div id="output" class="output muted" contenteditable="true" role="textbox" aria-label="作成した文章（直接編集できます）" aria-multiline="true" aria-live="polite">左のフォームに入力して「文章を作成する」を押してください。</div>
@@ -97,7 +102,7 @@ a{color:#176b49}a:hover{text-decoration:none}
 <ul id="reviewHints"><li>文章を作成すると確認項目が表示されます。</li></ul>
 <p class="button-hint">自動確認は目安です。日時、費用、事実関係は必ず人が確認してください。</p></section>
 <p class="notice" id="status" aria-live="polite">生成した文章はここで直接編集できます。コピー前に日時・料金などを確認してください。</p>
-<div class="history"><h2>🕒 保存した履歴</h2><div id="historyList" class="muted">履歴はまだありません。</div><button class="secondary" id="clearHistory" style="margin-top:10px">履歴をすべて削除</button><p class="notice">履歴はこの端末のブラウザ内にのみ保存されます。最大20件まで。各履歴を個別に削除できます。</p></div>
+<div class="history"><h2>🕒 保存した履歴</h2><div class="history-tools"><label for="historySearch" style="margin:0">履歴を検索</label><input id="historySearch" type="search" maxlength="100" placeholder="教室名や文章で検索" autocomplete="off"/></div><div class="history-counter" id="historyCounter"></div><div id="historyList" class="muted">履歴はまだありません。</div><button class="secondary" id="clearHistory" style="margin-top:10px">履歴をすべて削除</button><p class="notice">履歴はこの端末のブラウザ内にのみ保存されます。最大20件まで。各履歴を個別に削除できます。</p></div>
 </section></div>
 <section class="info-section" aria-labelledby="howto"><h2 id="howto">こんなお知らせを、数分で作成</h2>
 <div class="info-grid">
@@ -154,26 +159,38 @@ function getHistory(){
   }catch{return []}
 }
 function renderHistory(){
-  const history=getHistory();
-  $('historyList').classList.toggle('muted',history.length===0);
-  $('historyList').replaceChildren();
-  if(!history.length){$('historyList').textContent='履歴はまだありません。';return}
-  history.forEach((h,i)=>{
-    const row=document.createElement('div');row.className='history-item';
-    const label=document.createElement('span');
-    label.textContent=h.title+' · '+(h.date||'日付不明');
-    const actions=document.createElement('div');actions.className='actions';
-    const view=document.createElement('button');view.className='secondary';view.type='button';view.textContent='表示';
-    view.addEventListener('click',()=>{show(h.text);$('output').scrollIntoView({behavior:'smooth',block:'center'});});
-    const del=document.createElement('button');del.className='secondary';del.type='button';del.textContent='削除';
-    del.setAttribute('aria-label',(h.title||'履歴')+'を削除');
-    del.addEventListener('click',()=>{
-      const items=getHistory();items.splice(i,1);
-      try{localStorage.setItem(KEY,JSON.stringify(items));renderHistory();$('status').textContent='選択した履歴を削除しました。';}
-      catch{$('status').textContent='履歴を削除できませんでした。'}
-    });
-    actions.append(view,del);row.append(label,actions);$('historyList').append(row);
+ const all=getHistory(),query=$('historySearch').value.trim().toLowerCase();
+ const rows=all.map((item,index)=>({item,index}))
+  .filter(({item})=>!query||((item.title||'')+'\n'+item.text).toLowerCase().includes(query))
+  .sort((a,b)=>Number(!!b.item.favorite)-Number(!!a.item.favorite));
+ $('historyCounter').textContent=all.length+'件保存・'+rows.length+'件表示（最大20件）';
+ $('historyList').classList.toggle('muted',rows.length===0);
+ $('historyList').replaceChildren();
+ if(!rows.length){$('historyList').textContent=query?'該当する履歴はありません。':'履歴はまだありません。';return}
+ for(const {item,index} of rows){
+  const row=document.createElement('div');row.className='history-item';
+  const title=document.createElement('span');
+  title.textContent=(item.favorite?'★ ':'')+item.title+' · '+(item.date||'日付不明');
+  const actions=document.createElement('div');actions.className='actions';
+  const fav=document.createElement('button');fav.type='button';fav.className='secondary favorite-button';
+  fav.textContent=item.favorite?'★ お気に入り':'☆ お気に入り';fav.setAttribute('aria-pressed',String(!!item.favorite));
+  fav.addEventListener('click',()=>{
+   const saved=getHistory();if(!saved[index])return;
+   saved[index].favorite=!saved[index].favorite;
+   try{localStorage.setItem(KEY,JSON.stringify(saved));renderHistory()}
+   catch{$('status').textContent='お気に入りを保存できませんでした。'}
   });
+  const view=document.createElement('button');view.type='button';view.className='secondary';view.textContent='表示';
+  view.addEventListener('click',()=>{show(item.text);$('output').scrollIntoView({behavior:'smooth',block:'center'})});
+  const del=document.createElement('button');del.type='button';del.className='secondary';del.textContent='削除';
+  del.addEventListener('click',()=>{
+   if(!confirm('この履歴を削除しますか？'))return;
+   const saved=getHistory();saved.splice(index,1);
+   try{localStorage.setItem(KEY,JSON.stringify(saved));renderHistory();$('status').textContent='履歴を削除しました。'}
+   catch{$('status').textContent='履歴を削除できませんでした。'}
+  });
+  actions.append(fav,view,del);row.append(title,actions);$('historyList').append(row);
+ }
 }
 function show(text,rememberPrevious=true){
  if(rememberPrevious){const previous=currentText();undoDraft=previous&&previous!==text?previous:'';renderUndo();}
@@ -262,6 +279,7 @@ async function reviseDocument(){
   await invokeAI(inputs,'revise');
 }
 
+$('historySearch').addEventListener('input',renderHistory);
 $('generate').addEventListener('click',createDocument);
 $('revise').addEventListener('click',reviseDocument);
 $('undo').addEventListener('click',()=>{
@@ -282,7 +300,7 @@ $('output').addEventListener('input',()=>{updateCount();reviewDraft()});
 fields.forEach(id=>$(id).addEventListener('change',reviewDraft));
 $('reset').addEventListener('click',()=>{fields.forEach(id=>{if($(id).tagName==='SELECT')$(id).selectedIndex=0;else $(id).value=''});$('status').textContent='入力をクリアしました。'});
 $('copy').addEventListener('click',async()=>{if(!currentText())return $('status').textContent='先に文章を作成してください。';try{await navigator.clipboard.writeText(currentText());$('status').textContent='文章をコピーしました。'}catch{$('status').textContent='コピーできませんでした。文章を選択してコピーしてください。'}});
-$('save').addEventListener('click',()=>{if(!currentText())return $('status').textContent='先に文章を作成してください。';try{const arr=getHistory();arr.unshift({title:$('school').value.trim()||'教室のお知らせ',date:new Date().toLocaleDateString('ja-JP'),text:currentText()});localStorage.setItem(KEY,JSON.stringify(arr.slice(0,20)));renderHistory();$('status').textContent='履歴を保存しました。'}catch{$('status').textContent='保存できませんでした。ブラウザの設定をご確認ください。'}});
+$('save').addEventListener('click',()=>{if(!currentText())return $('status').textContent='先に文章を作成してください。';try{const arr=getHistory();arr.unshift({title:$('school').value.trim()||'教室のお知らせ',date:new Date().toLocaleDateString('ja-JP'),text:currentText(),favorite:false});const keep=arr.filter(x=>x.favorite).slice(0,20);keep.push(...arr.filter(x=>!x.favorite).slice(0,20-keep.length));localStorage.setItem(KEY,JSON.stringify(keep));renderHistory();$('status').textContent='履歴を保存しました。'}catch{$('status').textContent='保存できませんでした。ブラウザの設定をご確認ください。'}});
 $('clearHistory').addEventListener('click',()=>{if(!confirm('保存した履歴をすべて削除しますか？'))return;localStorage.removeItem(KEY);renderHistory();$('status').textContent='履歴を削除しました。'});
 renderHistory();
 
@@ -351,6 +369,9 @@ async function initializeVerification(){
     const response=await fetch('/api/config',{cache:'no-store'});
     if(!response.ok)throw Error('設定情報を取得できません');
     const config=await response.json();
+    if(config.rateLimitMisconfigured){$('limitStatus').textContent='AI利用回数制限の設定が未完了です。管理者が確認しています。';}
+    else if(config.rateLimitEnabled){$('limitStatus').textContent='AI文章生成と書き直しは同一接続元あたり最大12回/1時間です。';}
+    else{$('limitStatus').textContent='AIの回数制限は準備中です。';}
     if(config.misconfigured){
       requiresTurnstile=true;
       $('verificationNote').textContent='安全確認の設定が未完了です。管理者がCloudflareの環境変数を確認してください。';

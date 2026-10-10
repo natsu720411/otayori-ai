@@ -68,3 +68,18 @@ GitHub連携で作成した Pages プロジェクトは、production branch `mai
 - AIの書き直しも新規生成と同じくモデル利用量を消費します。過度な連続実行に対しては Turnstile のみでは十分な保護になりません。
 - 一般公開前に Cloudflare のサーバー側レート制限と消費状況の監視を追加してください。
 - 自動チェックは警告のみ。必須情報や日付などの正しさを機械的に保証するものではありません。
+
+## 継続利用向け改善
+- 文章の保存履歴を検索でき、お気に入りを一覧の先頭に表示します。
+- 20件超過時にはお気に入りを優先して残します（同じブラウザ内のみ）。
+
+## AI回数制限（無料のCloudflare D1、設定後に有効）
+**コードを配置しただけではサーバー側の制限は有効になりません。**
+本番運営前にCloudflareダッシュボードで以下を設定してください。
+1. Workers & Pages → D1 SQL Database で `otayori-ai-limits` 等のDBを作成。
+2. D1 Consoleで `schema.sql` のSQLを実行してテーブルを作成。
+3. otayori-ai → Settings → Bindings → D1 Database → 新しいDBを `AI_RATE_DB` という名前でProductionに紐付け。
+4. Settings → Variables and Secrets → `AI_RATE_SALT` を **Secret** としてProductionに登録（32文字以上のランダムな英数字を推奨、最低24文字）。キーはGitHubやチャットに絶対載せない。
+5. 再デプロイ後、`https://otayori-ai.pages.dev/api/config` で `rateLimitEnabled: true` を確認。
+
+D1とソルトの片方だけが設定された場合、AI利用は503で停止します。両方ある時は、同一接続元からAI文章作成＋書き直しを12回/時に制限し、上限後は429を返します。利用者のIPアドレスは保存せず、時間ごとに変化するHMAC-SHA256のハッシュキーで回数を記録します。D1障害時には生成を停止します。学校など共用回線では回数を共有します。大量アクセス・VPNによる制限回避には別の対策が必要です。
