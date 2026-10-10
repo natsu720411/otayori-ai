@@ -111,3 +111,15 @@ Cloudflare側で `AI_RATE_DB`（D1バインディング）と `AI_RATE_SALT`（S
 
 ## Cloudflare Pagesの正規URLの統一
 Cloudflare Pages はHTMLページへの `/guide.html` などのアクセスを拡張子なしの `/guide` にリダイレクトします。検索エンジンに転送前URLを案内しないよう、内部リンク、canonical、サイトマップは `/guide` の形式で統一しました。GitHub内の実ファイル名は引き続き `guide.html` 等です。
+
+## Cloudflare Web Analytics 接続後の確認（2026年10月）
+
+ユーザーが Cloudflare Web Analytics を管理画面で有効にした後、`main` の更新で Cloudflare Pages の新しいデプロイを促すための記録。
+
+1. Cloudflare → Workers & Pages → **otayori-ai** → Deployments で最新の Production が成功しているか確認する。
+2. 公開サイト `https://otayori-ai.pages.dev/` と例文ページをブラウザで開いてみる。
+3. Cloudflare Web Analytics のダッシュボードで、このサイトのデータが記録され始めたか確認する。反映まで多少時間がかかる場合がある。
+4. 記録されない場合は、Analytics 側で正しいサイト／ホスト名が対象になっているか、Pagesへの自動導入が有効か確認する。
+5. 初日から十分な数字が集まるとは限らない。最低でも数日分のデータが集まってから、閲覧されたページとSearch Consoleの検索クエリを比較する。
+
+このコミットでは新しい解析用 JavaScript を手動挿入しない。Cloudflare の自動導入との二重計測を避けるため。
