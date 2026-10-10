@@ -18,15 +18,16 @@
 <label for="type">お知らせの種類</label><select id="type"><option value="event">発表会・イベント</option><option value="closed">休講・振替</option><option value="monthly">月のおたより</option><option value="notice">一般のお知らせ</option></select>
 <label for="target">送る相手・掲載先</label><select id="target"><option value="parent">保護者向け</option><option value="line">LINE用</option><option value="instagram">Instagram用</option></select>
 <label for="tone">文章の雰囲気</label><select id="tone"><option value="polite">丁寧</option><option value="friendly">親しみやすい</option></select>
+<label for="mode">文章作成モード</label><select id="mode"><option value="template">テンプレート（いつでも利用可能）</option><option value="ai">AIで文章を生成（Cloudflare公開後）</option></select>
 <label for="date">日時（任意）</label><input id="date" placeholder="例：11月15日 13:00〜"/>
 <label for="place">場所（任意）</label><input id="place" placeholder="例：市民ホール"/>
-<label for="info">伝えたい内容 <span style="color:#a63a3a">*</span></label><textarea id="info" placeholder="例：参加費2,000円。持ち物は楽譜。申し込みは11月1日まで。"></textarea>
+<label for="info">伝えたい内容 <span style="color:#a63a3a">*</span></label><textarea id="info" maxlength="1000" placeholder="例：参加費2,000円。持ち物は楽譜。申し込みは11月1日まで。"></textarea>
 <div class="btns"><button class="primary" id="generate">文章を作成する</button><button class="secondary" id="reset">入力をクリア</button></div>
-<p class="notice">現在はAI APIを使わないテンプレート式の無料版です。入力は外部サーバーに送信しません。生徒の氏名・住所など個人情報は入力しないでください。</p>
+<p class="notice">テンプレートモードは端末内で動作します。AIモードはCloudflare公開後に利用可能となり、入力内容がAI処理に送信されます。生徒の氏名・住所など個人情報は入力しないでください。</p>
 </section>
-<section class="panel"><h2>📄 作成した文章</h2><div id="output" class="output muted" aria-live="polite">左のフォームに入力して「文章を作成する」を押してください。</div>
+<section class="panel"><h2>📄 作成した文章</h2><div id="output" class="output muted" contenteditable="true" role="textbox" aria-label="作成した文章（直接編集できます）" aria-multiline="true" aria-live="polite">左のフォームに入力して「文章を作成する」を押してください。</div>
 <div class="btns"><button class="primary" id="copy">文章をコピー</button><button class="secondary" id="save">履歴に保存</button></div>
-<p class="notice" id="status" aria-live="polite">文章は編集できます。コピー前に日付や事実関係を確認してください。</p>
+<p class="notice" id="status" aria-live="polite">生成した文章はここで直接編集できます。コピー前に日時・料金などを確認してください。</p>
 <div class="history"><h2>🕒 保存した履歴</h2><div id="historyList" class="muted">履歴はまだありません。</div><button class="secondary" id="clearHistory" style="margin-top:10px">履歴をすべて削除</button><p class="notice">履歴はこの端末のブラウザ内にのみ保存されます。最大20件まで。</p></div>
 </section></div>
 </main><footer>© おたよりAI ・ 文章の最終確認は利用者自身で行ってください。</footer>
@@ -34,10 +35,12 @@
 const $=id=>document.getElementById(id);
 const fields=['school','type','target','tone','date','place','info'];
 const KEY='otayori-ai-history-v1';
+const MAX_INPUT=1000;
 let draft='';
 function getHistory(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []}}
 function renderHistory(){let history=getHistory();$('historyList').classList.toggle('muted',history.length===0);$('historyList').replaceChildren();if(!history.length){$('historyList').textContent='履歴はまだありません。';return}history.forEach((h,i)=>{const row=document.createElement('div');row.className='history-item';const text=document.createElement('span');text.textContent=h.title+' · '+h.date;const b=document.createElement('button');b.className='secondary';b.textContent='表示';b.addEventListener('click',()=>show(h.text));row.append(text,b);$('historyList').append(row)})}
 function show(text){draft=text;$('output').textContent=text;$('output').classList.remove('muted')}
+function currentText(){return $('output').classList.contains('muted')?'':$('output').innerText.trim()}
 function generate(){const v=Object.fromEntries(fields.map(k=>[k,$(k).value.trim()]));if(!v.info){$('info').focus();$('status').textContent='伝えたい内容を入力してください。';return}
 const greet=v.tone==='friendly'?'いつもありがとうございます！':'平素より教室の活動にご理解とご協力をいただき、誠にありがとうございます。';
 const opener={event:'発表会・イベントのご案内',closed:'休講・振替のお知らせ',monthly:'今月のおたより',notice:'教室からのお知らせ'}[v.type];
@@ -48,10 +51,44 @@ if(v.target==='instagram'){text='【'+opener+'】\n\n'+(v.school||'教室')+'か
 else if(v.target==='line'){text='【'+opener+'】\n'+(v.school?v.school+'より\n':'')+'\n'+greet+'\n'+body+'\n'+(v.date?'\n日時：'+v.date:'')+(v.place?'\n場所：'+v.place:'')+'\n\n'+v.info+'\n\n'+ending}
 else{text=(v.school?v.school+'\n':'')+'【'+opener+'】\n\n保護者の皆さま\n\n'+greet+'\n'+body+'\n'+(v.date?'\n日時：'+v.date:'')+(v.place?'\n場所：'+v.place:'')+'\n\n'+v.info+'\n\n'+ending+'\n\n'+(v.school||'教室')}
 show(text);$('status').textContent='下書きができました。事実関係を確認してご利用ください。'}
-$('generate').addEventListener('click',generate);
+
+async function createDocument(){
+  if($('mode').value==='template'){generate();return}
+  const info=$('info').value.trim();
+  if(!info){$('status').textContent='伝えたい内容を入力してください。';$('info').focus();return}
+  if(location.hostname.endsWith('.github.io')){
+    $('status').textContent='AIモードはCloudflare Pagesでの公開とAI接続後に使えます。今はテンプレートを選んでください。';
+    return;
+  }
+  const inputs=Object.fromEntries(fields.map(k=>[k,$(k).value.trim()]));
+  const button=$('generate');
+  button.disabled=true;button.textContent='AIが作成中…';
+  $('status').textContent='AIで下書きを作成しています。しばらくお待ちください。';
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),25000);
+  try{
+    const response=await fetch('/api/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(inputs),
+      signal:controller.signal
+    });
+    const result=await response.json().catch(()=>null);
+    if(!response.ok)throw new Error(result?.error||('AIサーバーがエラーを返しました（'+response.status+'）'));
+    if(typeof result?.text!=='string'||!result.text.trim())throw new Error('文章を取得できませんでした。');
+    show(result.text.trim());
+    $('status').textContent='AIで下書きを作成しました。内容と事実関係を確認してください。';
+  }catch(error){
+    $('status').textContent=error.name==='AbortError'?'時間がかかりすぎたため停止しました。もう一度お試しください。':('AI生成できませんでした：'+error.message+' テンプレートは引き続き使えます。');
+  }finally{
+    clearTimeout(timeout);button.disabled=false;button.textContent='文章を作成する';
+  }
+}
+
+$('generate').addEventListener('click',createDocument);
 $('reset').addEventListener('click',()=>{fields.forEach(id=>{if($(id).tagName==='SELECT')$(id).selectedIndex=0;else $(id).value=''});$('status').textContent='入力をクリアしました。'});
-$('copy').addEventListener('click',async()=>{if(!draft)return $('status').textContent='先に文章を作成してください。';try{await navigator.clipboard.writeText(draft);$('status').textContent='文章をコピーしました。'}catch{$('status').textContent='コピーできませんでした。文章を選択してコピーしてください。'}});
-$('save').addEventListener('click',()=>{if(!draft)return $('status').textContent='先に文章を作成してください。';try{const arr=getHistory();arr.unshift({title:$('school').value.trim()||'教室のお知らせ',date:new Date().toLocaleDateString('ja-JP'),text:draft});localStorage.setItem(KEY,JSON.stringify(arr.slice(0,20)));renderHistory();$('status').textContent='履歴を保存しました。'}catch{$('status').textContent='保存できませんでした。ブラウザの設定をご確認ください。'}});
+$('copy').addEventListener('click',async()=>{if(!currentText())return $('status').textContent='先に文章を作成してください。';try{await navigator.clipboard.writeText(currentText());$('status').textContent='文章をコピーしました。'}catch{$('status').textContent='コピーできませんでした。文章を選択してコピーしてください。'}});
+$('save').addEventListener('click',()=>{if(!currentText())return $('status').textContent='先に文章を作成してください。';try{const arr=getHistory();arr.unshift({title:$('school').value.trim()||'教室のお知らせ',date:new Date().toLocaleDateString('ja-JP'),text:currentText()});localStorage.setItem(KEY,JSON.stringify(arr.slice(0,20)));renderHistory();$('status').textContent='履歴を保存しました。'}catch{$('status').textContent='保存できませんでした。ブラウザの設定をご確認ください。'}});
 $('clearHistory').addEventListener('click',()=>{if(!confirm('保存した履歴をすべて削除しますか？'))return;localStorage.removeItem(KEY);renderHistory();$('status').textContent='履歴を削除しました。'});
 renderHistory();
 </script>
