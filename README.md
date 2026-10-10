@@ -83,3 +83,13 @@ GitHub連携で作成した Pages プロジェクトは、production branch `mai
 5. 再デプロイ後、`https://otayori-ai.pages.dev/api/config` で `rateLimitEnabled: true` を確認。
 
 D1とソルトの片方だけが設定された場合、AI利用は503で停止します。両方ある時は、同一接続元からAI文章作成＋書き直しを12回/時に制限し、上限後は429を返します。利用者のIPアドレスは保存せず、時間ごとに変化するHMAC-SHA256のハッシュキーで回数を記録します。D1障害時には生成を停止します。学校など共用回線では回数を共有します。大量アクセス・VPNによる制限回避には別の対策が必要です。
+
+
+## D1接続後の本番確認チェック
+Cloudflare側で `AI_RATE_DB`（D1バインディング）と `AI_RATE_SALT`（Secret）を設定したら、`main` へのコミットでPagesの自動デプロイを開始します。
+
+- Cloudflare → Workers & Pages → otayori-ai → Deployments で、このコミットに対応するProductionデプロイが成功したことを確認。
+- `https://otayori-ai.pages.dev/api/config` を開き、`rateLimitEnabled: true` と `rateLimitMisconfigured: false` が返ることを確認。
+- AIで文章生成を1回実行し、既存のTurnstile認証とD1の両方が正常に動くことを確認。
+- `rateLimitEnabled: false` ならバインディングとSecretの設定先がProductionか確認。DBを作成するだけでは制限は有効になりません。
+- `rateLimitMisconfigured: true` なら片方の設定が不足しています。両方の設定を揃えてから再デプロイ。
