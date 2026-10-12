@@ -85,5 +85,5 @@ footer{text-align:center;color:#627669;font-size:13px;padding:0 16px 26px}
 <p>同じ丁寧な挨拶でも問題ありませんが、本文には当月の具体的な活動や予定を反映すると、実際に役立つおたよりになります。</p>
 <h2>あわせて読みたい</h2>
 <div class="linkgrid"><a href="./piano-recital">ピアノ発表会の案内文 →</a><a href="./english-trial">英会話体験レッスンの案内文 →</a></div>
-</article></main><footer>© おたよりAI ・ <a href="./plans">利用料金・今後の予定</a> ・ <a href="./privacy">プライバシー</a></footer>
-</body></html>
+<section aria-label="この記事を共有"><h2>この記事を先生仲間に共有</h2><p>この例文ページへのリンクを共有できます。保存した文章や入力内容は共有されません。</p><button type="button" id="shareArticle" class="cta alt">この記事のリンクを共有</button><p id="shareFeedback" role="status" aria-live="polite"></p></section></article></main><footer>© おたよりAI ・ <a href="./plans">利用料金・今後の予定</a> ・ <a href="./privacy">プライバシー</a></footer>
+<script>document.getElementById('shareArticle').addEventListener('click',async()=>{const url='https://otayori-ai.pages.dev/monthly-newsletter',title=document.title,status=document.getElementById('shareFeedback');try{if(typeof navigator.share==='function'){await navigator.share({title,url});status.textContent='共有しました。'}else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url);status.textContent='この記事のURLをコピーしました。'}else status.textContent='共有URL：'+url;}catch(e){if(e?.name!=='AbortError')status.textContent='共有できませんでした。URL：'+url;}});</script></body></html>

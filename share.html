@@ -1,0 +1,36 @@
+<!doctype html><html lang="ja"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SNS用紹介文をコピー | おたよりAI</title>
+<meta name="robots" content="noindex,follow"/>
+<meta name="description" content="おたよりAIを教室の先生にSNSで紹介するための文章。文面を自由に編集してコピーできます。"/>
+<link rel="canonical" href="https://otayori-ai.pages.dev/share"/><link rel="icon" href="./favicon.svg" type="image/svg+xml"/>
+<style>*{box-sizing:border-box}:root{font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;color:#24372e;background:#f4f9f5}body{margin:0}header{padding:18px max(18px,calc((100vw - 800px)/2));background:white;border-bottom:1px solid #dce9de}main{max-width:800px;margin:25px auto;padding:0 16px 50px}article{background:white;border:1px solid #dce9de;border-radius:16px;padding:clamp(18px,4vw,32px)}h1{font-size:clamp(23px,3vw,32px)}.item{border-top:1px solid #e4eee7;padding:18px 0}.item h2{font-size:18px}p{line-height:1.8}.notice{background:#f3f9f4;border-radius:10px;padding:12px;font-size:13px}textarea{font:inherit;line-height:1.7;width:100%;padding:12px;border-radius:10px;border:1px solid #cbded1;background:#fafcfb;color:#24372e;resize:vertical}button{background:#227c57;color:white;border:none;border-radius:9px;padding:10px 16px;margin-top:7px;cursor:pointer;font:inherit;font-weight:700}a{color:#146344}.status{font-size:13px;color:#176b49;margin:3px 0;min-height:1.4em}button:focus-visible,textarea:focus-visible{outline:3px solid #81cfa4}</style>
+</head><body><header><a href="./">✉ おたよりAIに戻る</a></header><main><article>
+<h1>SNSでおたよりAIを紹介する</h1>
+<p>文章を編集してコピーできます。自動投稿やメール送信は行いません。</p>
+<p class="notice">無関係な相手への大量DMや、宣伝禁止のコミュニティへの投稿は避けてください。実際に使ったことのない人の口コミを装わないでください。Instagramの通常投稿には画像・動画が必要で、このページはキャプション文章のみです。</p>
+<section class="item"><h2>サイト紹介</h2><textarea id="p0" rows="5" aria-label="サイト紹介の文面">習い事教室向けの無料文章作成ツール「おたよりAI」を運営しています。発表会案内・休講連絡・月のおたよりを作れます。会員登録不要。AIを使わないテンプレートもあります。
+https://otayori-ai.pages.dev/
+#習い事教室 #教室運営</textarea><button type="button" data-copy="p0">文章をコピー</button><p id="m0" class="status" aria-live="polite"></p></section>
+<section class="item"><h2>ピアノ教室向けの役立つコツ</h2><textarea id="p1" rows="5" aria-label="ピアノ教室向けの役立つコツの文面">発表会の案内文は、日時・会場・参加費・申込期限を整理すると保護者に伝わりやすくなります。保護者向け／LINE用の例文を無料公開中（例文の日時や費用は架空）。
+https://otayori-ai.pages.dev/piano-recital
+#ピアノ教室</textarea><button type="button" data-copy="p1">文章をコピー</button><p id="m1" class="status" aria-live="polite"></p></section>
+<section class="item"><h2>休講・振替の連絡のコツ</h2><textarea id="p2" rows="5" aria-label="休講・振替の連絡のコツの文面">習い事の休講連絡は「いつ休むか」「どのクラスか」「振替は確定しているか」を先に伝えると混乱を減らせます。状況別の例文はこちら。
+https://otayori-ai.pages.dev/lesson-cancellation
+#教室運営</textarea><button type="button" data-copy="p2">文章をコピー</button><p id="m2" class="status" aria-live="polite"></p></section>
+<section class="item"><h2>月のおたよりの書き方</h2><textarea id="p3" rows="5" aria-label="月のおたよりの書き方の文面">月のおたよりを毎月ゼロから考えるのは大変。①今月の活動 ②ご家庭へのお願い ③今後の予定、の3つに分けると整理しやすいです。無料の例文はこちら。
+https://otayori-ai.pages.dev/monthly-newsletter
+#おたより</textarea><button type="button" data-copy="p3">文章をコピー</button><p id="m3" class="status" aria-live="polite"></p></section>
+<section class="item"><h2>Instagramの投稿キャプション</h2><textarea id="p4" rows="10" aria-label="Instagramの投稿キャプションの文面">発表会の案内、休講のお知らせ、毎月のおたより。
+教室の先生が文章を考える際に役立つ無料ツール「おたよりAI」を作りました。
+
+会員登録不要。AIを使わないテンプレートもあり、AI生成には回数制限があります。
+https://otayori-ai.pages.dev/
+
+#ピアノ教室 #英会話教室 #教室運営 #おたより</textarea><button type="button" data-copy="p4">文章をコピー</button><p id="m4" class="status" aria-live="polite"></p></section><p><a href="./">無料の文章作成ツールに戻る →</a></p>
+</article></main><script>
+document.querySelectorAll('[data-copy]').forEach(button=>button.addEventListener('click',async()=>{
+ const id=button.dataset.copy,field=document.getElementById(id),status=document.getElementById('m'+id.slice(1));
+ try{await navigator.clipboard.writeText(field.value);status.textContent='コピーしました。内容を確認してから投稿してください。'}
+ catch{field.focus();field.select();status.textContent='文章を選択しました。Ctrl+Cなどでコピーしてください。'}
+}));
+</script></body></html>

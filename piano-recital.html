@@ -93,5 +93,5 @@ footer{text-align:center;color:#627669;font-size:13px;padding:0 16px 26px}
 <p>曜日はカレンダーで確認し、開場と開演の時刻を別々に記載します。年度によって曜日が変わるため、過去の案内文をそのまま使わないようにしましょう。</p>
 <h2>ほかの例文も見る</h2>
 <div class="linkgrid"><a href="./lesson-cancellation">休講・振替の例文 →</a><a href="./guide">教室のおたより全般 →</a></div>
-</article></main><footer>© おたよりAI ・ <a href="./privacy">プライバシー</a> ・ <a href="./">文章作成へ</a></footer>
-</body></html>
+<section aria-label="この記事を共有"><h2>この記事を先生仲間に共有</h2><p>この例文ページへのリンクを共有できます。保存した文章や入力内容は共有されません。</p><button type="button" id="shareArticle" class="cta alt">この記事のリンクを共有</button><p id="shareFeedback" role="status" aria-live="polite"></p></section></article></main><footer>© おたよりAI ・ <a href="./privacy">プライバシー</a> ・ <a href="./">文章作成へ</a></footer>
+<script>document.getElementById('shareArticle').addEventListener('click',async()=>{const url='https://otayori-ai.pages.dev/piano-recital',title=document.title,status=document.getElementById('shareFeedback');try{if(typeof navigator.share==='function'){await navigator.share({title,url});status.textContent='共有しました。'}else if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url);status.textContent='この記事のURLをコピーしました。'}else status.textContent='共有URL：'+url;}catch(e){if(e?.name!=='AbortError')status.textContent='共有できませんでした。URL：'+url;}});</script></body></html>
