@@ -93,7 +93,7 @@ a{color:#176b49}a:hover{text-decoration:none}
 <div class="hero"><h1>教室のお知らせを、もっとかんたんに。</h1><p>ピアノ・英会話・スポーツ教室などの連絡文をすばやく下書き。<br>文章を確認・編集して、そのままコピーできます。</p>
 <div class="hero-actions">
 <a class="hero-cta" href="#create">無料で文章を作成する ↓</a>
-<button type="button" class="secondary" id="shareSite">先生仲間にサイトを紹介</button>
+<button type="button" class="secondary" id="shareSite">教室の先生に紹介文を送る</button>
 </div>
 <p class="hero-status" id="shareStatus" aria-live="polite">登録不要。テンプレートモードならAIの利用回数を消費しません。</p>
 <div class="quick-start" aria-labelledby="quickTitle">
@@ -363,14 +363,14 @@ document.querySelectorAll('[data-quick]').forEach(button=>{
 });
 $('shareSite').addEventListener('click',async()=>{
  const url='https://otayori-ai.pages.dev/';
- const description='おたよりAI｜教室の案内文や休講連絡を無料で作れるサイト';
+ const shareText='習い事教室向けの無料文章作成ツール「おたよりAI」。発表会・休講・月のおたよりを、登録なしで下書きできます。テンプレートはAIの利用回数を消費しません。もし使ったら、使いやすかった点や困った点も教えてください。';
  try{
    if(typeof navigator.share==='function'){
-     await navigator.share({title:'おたよりAI',text:description,url});
+     await navigator.share({title:'おたよりAI',text:shareText,url});
      $('shareStatus').textContent='サイトを共有しました。文章や個人情報は送信していません。';
    }else if(navigator.clipboard?.writeText){
-     await navigator.clipboard.writeText(url);
-     $('shareStatus').textContent='サイトのURLをコピーしました。先生仲間に送れます。';
+     await navigator.clipboard.writeText(shareText+'\n'+url);
+     $('shareStatus').textContent='紹介文とサイトURLをコピーしました。先生仲間に送れます。';
    }else{
      $('shareStatus').textContent='このURLを共有してください：'+url;
    }
