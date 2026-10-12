@@ -6,6 +6,8 @@
 <meta name="description" content="ピアノ・英会話・スポーツ教室の発表会案内、休講連絡、月のおたよりを無料で作成。LINE・Instagram向けにも調整できる文章作成ツール。"/>
 <link rel="canonical" href="https://otayori-ai.pages.dev/"/>
 <meta property="og:type" content="website"/>
+<meta property="og:locale" content="ja_JP"/>
+<meta name="twitter:card" content="summary"/>
 <meta property="og:site_name" content="おたよりAI"/>
 <meta property="og:title" content="おたよりAI | 教室のお知らせ・連絡文をかんたん作成"/>
 <meta property="og:description" content="習い事教室の発表会・休講連絡・月のおたよりを無料で下書き。"/>
@@ -13,7 +15,8 @@
 <meta name="robots" content="index,follow"/>
 <meta name="theme-color" content="#227c57"/>
 <link rel="icon" href="./favicon.svg" type="image/svg+xml"/>
-<title>おたよりAI | 教室のお知らせをかんたん作成</title>
+<title>教室のおたより・休講連絡を無料作成 | おたよりAI</title>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"おたよりAI","url":"https://otayori-ai.pages.dev/","applicationCategory":"BusinessApplication","operatingSystem":"Web","inLanguage":"ja","isAccessibleForFree":true,"description":"ピアノ教室・英会話教室・スポーツ教室向けに、お知らせ、休講、月のおたよりを作成する無料の文章作成ツール。AIでの文章生成は回数制限あり。"}</script>
 <style>
 :root{font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;color:#20332d;background:#f5f9f5}*{box-sizing:border-box}body{margin:0}header{background:#fff;border-bottom:1px solid #dae8de;padding:17px max(20px,calc((100vw - 1080px)/2));display:flex;justify-content:space-between;align-items:center}.logo{font-size:22px;font-weight:800;color:#207756}.pill{background:#e7f5ea;border-radius:50px;padding:6px 12px;color:#207756;font-size:12px}main{max-width:1080px;margin:auto;padding:30px 18px 65px}.hero{text-align:center;margin:12px auto 28px}.hero h1{font-size:clamp(26px,4vw,42px);margin:8px}.hero p{color:#64756c;line-height:1.7}.layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel{background:white;padding:25px;border-radius:18px;box-shadow:0 5px 22px #1635270b;border:1px solid #e1ebe4}h2{font-size:20px;margin:0 0 20px}label{display:block;font-weight:650;font-size:14px;margin:13px 0 6px}input,select,textarea{display:block;width:100%;font:inherit;border:1px solid #cadbd0;border-radius:9px;padding:11px;background:white;color:#20332d}textarea{resize:vertical;min-height:118px}button{font:inherit;cursor:pointer;border:0;border-radius:9px;padding:11px 15px;font-weight:700}.primary{background:#227c57;color:white}.secondary{background:#e8f5ec;color:#176b49}.btns{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.output{white-space:pre-wrap;line-height:1.9;min-height:285px;background:#f8fbf8;border:1px solid #e0ece3;padding:16px;border-radius:12px}.muted{color:#73887c}.history{margin-top:20px}.history-item{display:flex;justify-content:space-between;gap:8px;border-top:1px solid #e4eee7;padding:12px 0}.history-item button{padding:5px 10px}.notice{font-size:13px;color:#62796b;line-height:1.7;margin-top:12px}footer{text-align:center;color:#789087;font-size:12px;padding:12px}@media(max-width:720px){.layout{grid-template-columns:1fr}main{padding-top:18px}.panel{padding:18px}header{padding:15px 18px}}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #81cfa4}
 
@@ -71,6 +74,17 @@ a{color:#176b49}a:hover{text-decoration:none}
 .steps b{display:inline-grid;place-items:center;width:21px;height:21px;background:#227c57;color:white;border-radius:50%;margin-right:5px;font-size:12px}
 #create{scroll-margin-top:20px}
 @media(max-width:480px){.hero-actions{flex-direction:column}.hero-cta,.hero-actions button{width:100%;text-align:center}.steps{justify-content:flex-start;flex-direction:column}}
+.quick-start{max-width:780px;margin:17px auto 16px;padding:17px 18px;border:1px solid #cfe3d6;border-radius:15px;background:white;text-align:left}
+.quick-start h2{margin:0 0 12px;font-size:17px;text-align:center}
+.quick-buttons{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.quick-link{border:1px solid #cae5d5;background:#f0f8f2;color:#176b49;font-size:13px;padding:12px 7px;min-height:48px;line-height:1.4}
+.quick-link:hover{background:#daf0e2}.quick-link:focus-visible{outline:3px solid #81cfa4}
+.quick-start .help{font-size:12px;text-align:center;margin:10px 0 0}
+.faq-section details{border-bottom:1px solid #e0ebe3;padding:9px 0}
+.faq-section summary{font-weight:700;cursor:pointer;padding:7px 0}
+.faq-section details p{margin:4px 0 10px}
+@media(max-width:720px){header{flex-wrap:wrap;gap:8px}header .toplinks{width:100%;gap:10px}.quick-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){.quick-buttons{grid-template-columns:1fr 1fr}.quick-link{font-size:12px}}
 </style>
 </head>
 <body>
@@ -82,6 +96,16 @@ a{color:#176b49}a:hover{text-decoration:none}
 <button type="button" class="secondary" id="shareSite">先生仲間にサイトを紹介</button>
 </div>
 <p class="hero-status" id="shareStatus" aria-live="polite">登録不要。テンプレートモードならAIの利用回数を消費しません。</p>
+<div class="quick-start" aria-labelledby="quickTitle">
+  <h2 id="quickTitle">何のお知らせを作りますか？</h2>
+  <div class="quick-buttons">
+    <button type="button" class="quick-link" data-quick="recital">🎹 発表会の案内</button>
+    <button type="button" class="quick-link" data-quick="closed">📅 休講・振替</button>
+    <button type="button" class="quick-link" data-quick="monthly">✉️ 月のおたより</button>
+    <button type="button" class="quick-link" data-quick="trial">🔤 体験レッスン募集</button>
+  </div>
+  <p class="help" id="quickStatus" aria-live="polite">用途を選ぶと入力フォームに移動します。架空の日時や料金は入力しません。</p>
+</div>
 <div class="steps" aria-label="文章作成の手順">
 <span><b>1</b> お知らせの種類を選ぶ</span><span><b>2</b> 内容を入力して作成</span><span><b>3</b> 確認してコピー</span>
 </div></div>
@@ -99,7 +123,7 @@ a{color:#176b49}a:hover{text-decoration:none}
 <label for="date">日時（任意）</label><input id="date" maxlength="120" placeholder="例：11月15日 13:00〜"/>
 <label for="place">場所（任意）</label><input id="place" maxlength="120" placeholder="例：市民ホール"/>
 <div class="shortcut-area"><p class="help">入力例から試す</p><div class="btns compact"><button type="button" class="secondary example" data-example="event">発表会</button><button type="button" class="secondary example" data-example="closed">休講</button><button type="button" class="secondary example" data-example="monthly">月のおたより</button></div></div>
-<label for="info">伝えたい内容 <span style="color:#a63a3a">*</span></label><textarea id="info" maxlength="1000" placeholder="例：参加費2,000円。持ち物は楽譜。申し込みは11月1日まで。"></textarea><p class="help" id="sampleNote" aria-live="polite"></p>
+<label for="info">伝えたい内容 <span style="color:#a63a3a">*</span></label><p id="infoHint" class="help">何が決まっているか、日時・対象・必要な対応などを短く入力してください。</p><textarea id="info" maxlength="1000" placeholder="例：参加費2,000円。持ち物は楽譜。申し込みは11月1日まで。"></textarea><p class="help" id="sampleNote" aria-live="polite"></p>
 <div class="btns"><button class="primary" id="generate">文章を作成する</button><button class="secondary" id="reset">入力をクリア</button></div>
 <div class="verify-box" id="turnstilePanel" hidden>
 <strong>安全確認</strong>
@@ -140,6 +164,13 @@ a{color:#176b49}a:hover{text-decoration:none}
  <a href="./monthly-newsletter"><strong>月のおたよりの例文</strong><small>今月の目標・保護者へのお願い・LINE連絡</small></a>
 </div>
 <p>※ AIが入力していない情報を補ってしまうことがあります。日付・会場・費用・連絡先は公開前に必ずご確認ください。</p>
+</section>
+<section class="info-section faq-section" aria-labelledby="faqTitle">
+<h2 id="faqTitle">よくある質問</h2>
+<details><summary>本当に無料で使えますか？</summary><p>現在は無料のお試し版です。AI文章生成・書き直しには、同じ接続元から合計12回／1時間の上限があります。無料のテンプレート作成はAIの利用回数を消費しません。<a href="./plans">料金について</a></p></details>
+<details><summary>会員登録は必要ですか？</summary><p>現在、会員登録なしで利用できます。作成した文章はコピーして利用できます。</p></details>
+<details><summary>文章はどこに保存されますか？</summary><p>「履歴に保存」を押した文章は、この端末のブラウザに保存されます。別の端末には同期されません。AIに送信する内容や保存については<a href="./privacy">プライバシーのご案内</a>をご確認ください。</p></details>
+<details><summary>AIを使わずに文章を作れますか？</summary><p>はい。文章作成モードで「テンプレート」を選べば、ブラウザだけで文章を作成できます。作成後の文章は編集してコピーできます。</p></details>
 </section>
 </main><footer>© おたよりAI ・ <a href="./privacy">プライバシー</a> ・ <a href="./guide">使い方</a> ・ <a href="./plans">利用料金・今後の予定</a> ・ 文章の最終確認は利用者自身で行ってください。</footer>
 <script>
@@ -307,6 +338,29 @@ async function reviseDocument(){
   await invokeAI(inputs,'revise');
 }
 
+// Quick-start choices only configure form categories; they do not fabricate dates,
+// overwrite existing text, contact AI, or store any visitor data.
+const quickChoices={
+ recital:{type:'event',schoolType:'piano',hint:'発表会の日付・開始時刻・会場・参加費・申込期限など、確定している情報を入力してください。'},
+ closed:{type:'closed',hint:'休講する日時・クラス・振替の予定（未定なら未定）を入力してください。'},
+ monthly:{type:'monthly',hint:'対象の月、今月の活動、保護者へのお願い、確定した予定を入力してください。'},
+ trial:{type:'event',schoolType:'english',hint:'体験レッスンの対象学年・日時・場所・参加費・申し込み方法など、確定した情報を入力してください。'}
+};
+document.querySelectorAll('[data-quick]').forEach(button=>{
+ button.addEventListener('click',()=>{
+  const item=quickChoices[button.dataset.quick];
+  if(!item)return;
+  $('type').value=item.type;
+  if(item.schoolType)$('schoolType').value=item.schoolType;
+  $('infoHint').textContent=item.hint;
+  const hasExisting=$('info').value.trim().length>0;
+  $('quickStatus').textContent=hasExisting
+   ?'用途を切り替えました。以前に入力した文章が残っています。内容を確認してください。'
+   :'用途を選択しました。次に伝えたい内容を入力してください。';
+  $('create').scrollIntoView({behavior:'smooth',block:'start'});
+  $('info').focus({preventScroll:true});
+ });
+});
 $('shareSite').addEventListener('click',async()=>{
  const url='https://otayori-ai.pages.dev/';
  const description='おたよりAI｜教室の案内文や休講連絡を無料で作れるサイト';
