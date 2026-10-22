@@ -197,6 +197,7 @@ let turnstileToken='';
 let turnstileWidget=null;
 let turnstileReady=false;
 let turnstileSiteKey='';let turnstileLoadStarted=false;
+let aiRevisionRequested=false;
 
 let draft='';
 let undoDraft='';
@@ -240,7 +241,7 @@ function renderHistory(){
  $('historyCounter').textContent=all.length+'件保存・'+rows.length+'件表示（最大20件）';
  $('historyList').classList.toggle('muted',rows.length===0);
  $('historyList').replaceChildren();
- if(!rows.length){$('historyList').textContent=query?'該当する履歴はありません。':'履歴はまだありません。';return}
+ if(!rows.length){$('historyList').textContent=query?'検索条件に該当する履歴はありません。':kind==='all'?'履歴はまだありません。':'この種類の履歴はありません。';return}
  for(const {item,index} of rows){
   const row=document.createElement('div');row.className='history-item';
   const title=document.createElement('span');
@@ -307,7 +308,14 @@ async function invokeAI(payload,kind){
     return;
   }
   if(requiresTurnstile&&!turnstileToken){
-    $('status').textContent='先に安全確認を完了してください。';
+    if(kind==='revise')aiRevisionRequested=true;
+    updateModeUI();ensureTurnstile();
+    const instruction=turnstileSiteKey
+      ?'AIを使う前に「AI用の安全確認」を完了し、もう一度ボタンを押してください。'
+      :'AI用の安全確認がまだ利用できません。設定や通信状態を確認してください。';
+    if(kind==='revise')$('reviewStatus').textContent=instruction;
+    else $('status').textContent=instruction;
+    if(turnstileSiteKey)$('turnstilePanel').scrollIntoView({behavior:'smooth',block:'center'});
     return;
   }
   const generate=$('generate'),revise=$('revise');
@@ -383,14 +391,14 @@ function updateModeUI(){
  $('modeGuide').textContent=ai
   ?'AIモードは入力内容をCloudflare Workers AIに送信します。同じ接続元から生成と書き直し合計12回／1時間まで。安全確認が必要です。'
   :'テンプレートは端末内で作成し、AIの回数制限を消費しません。';
- $('turnstilePanel').hidden=!(ai&&requiresTurnstile);
+ $('turnstilePanel').hidden=!((ai||aiRevisionRequested)&&requiresTurnstile);
 }
 function ensureTurnstile(){
- if(requiresTurnstile&&$('mode').value==='ai'&&turnstileSiteKey&&!turnstileLoadStarted){
+ if(requiresTurnstile&&($('mode').value==='ai'||aiRevisionRequested)&&turnstileSiteKey&&!turnstileLoadStarted){
   turnstileLoadStarted=true;loadTurnstile(turnstileSiteKey);
  }
 }
-$('mode').addEventListener('change',()=>{updateModeUI();ensureTurnstile()});
+$('mode').addEventListener('change',()=>{if($('mode').value==='ai')aiRevisionRequested=false;updateModeUI();ensureTurnstile()});
 const DRAFT_KEY='otayori-ai-unsent-v1',DRAFT_TTL=7*24*60*60*1000,draftFields=[...fields,'mode','length'];
 function readUnsent(){
  try{
@@ -451,6 +459,8 @@ document.querySelectorAll('[data-quick]').forEach(button=>{
   if(!item)return;
   $('type').value=item.type;
   if(item.schoolType)$('schoolType').value=item.schoolType;
+  if($('date').value.trim()||$('place').value.trim())$('advancedFields').open=true;
+  $('comparePanel').hidden=true;
   saveUnsent();
   $('infoHint').textContent=item.hint;
   const hasExisting=$('info').value.trim().length>0;
@@ -501,9 +511,14 @@ fields.forEach(id=>$(id).addEventListener('change',reviewDraft));
 $('reset').addEventListener('click',()=>{
  fields.forEach(id=>{if($(id).tagName==='SELECT')$(id).selectedIndex=0;else $(id).value=''});
  $('mode').selectedIndex=0;$('length').selectedIndex=0;$('comparePanel').hidden=true;
- if($('autoSaveDraft').checked){try{localStorage.removeItem(DRAFT_KEY)}catch{};$('autoSaveDraft').checked=false;}
+ try{localStorage.removeItem(DRAFT_KEY)}catch{}
+ $('autoSaveDraft').checked=false;
+ $('draftRestore').hidden=true;
+ $('sampleNote').textContent='';
+ $('advancedFields').open=false;
+ aiRevisionRequested=false;
  updateModeUI();reviewDraft();
- $('draftStatus').textContent='入力をクリアし、途中入力の自動保存をOFFにしました。';
+ $('draftStatus').textContent='入力欄と途中入力の保存内容をクリアし、自動保存をOFFにしました。';
  $('status').textContent='入力をクリアしました。';
 });
 async function copyGeneratedText(){
@@ -578,6 +593,9 @@ document.querySelectorAll('[data-example]').forEach(button=>{
   const sample=examples[button.dataset.example];
   if(!sample)return;
   ['type','date','place','info'].forEach(id=>$(id).value=sample[id]);
+  $('advancedFields').open=true;
+  $('sampleNote').textContent='この入力例の日時・場所・料金は架空です。詳細設定と文章を確認してください。';
+  $('comparePanel').hidden=true;
   saveUnsent();
   $('status').textContent='架空の入力例を設定しました。「文章を作成する」を押してください。';
  });
@@ -630,6 +648,7 @@ const sampleKey=new URLSearchParams(location.search).get('sample');
 if(Object.prototype.hasOwnProperty.call(samplePresets,sampleKey)){
  const sample=samplePresets[sampleKey];
  Object.entries(sample).forEach(([id,value])=>{if($(id))$(id).value=value});
+ $('advancedFields').open=true;
  $('sampleNote').textContent='例文の入力例をセットしました。架空の日時・金額・会場を実際の情報に変更してから作成してください。';
  $('status').textContent='入力例をセットしました。内容を確認して「文章を作成する」を押してください。';
 }
