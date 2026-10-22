@@ -85,6 +85,11 @@ a{color:#176b49}a:hover{text-decoration:none}
 .faq-section details p{margin:4px 0 10px}
 @media(max-width:720px){header{flex-wrap:wrap;gap:8px}header .toplinks{width:100%;gap:10px}.quick-buttons{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:390px){.quick-buttons{grid-template-columns:1fr 1fr}.quick-link{font-size:12px}}
+.advanced-fields{margin:15px 0;border:1px solid #dce8df;border-radius:12px;background:#f8fbf8}.advanced-fields summary{padding:13px;cursor:pointer;font-weight:700;color:#176b49}.advanced-inner{border-top:1px solid #dce8df;padding:5px 14px 17px}
+.mode-guide{background:#eaf5ed;border:1px solid #dce9de;color:#235c41;padding:11px;border-radius:9px;font-size:13px;line-height:1.65}
+.unsent-draft{border:1px solid #e1ebe4;border-radius:10px;background:#fafcfb;padding:12px;margin:16px 0}.draft-check{display:flex;gap:10px;align-items:center}.draft-check input{width:auto;margin:0}
+.compare-panel{border:1px solid #dce9de;border-radius:12px;padding:14px;margin:12px 0;background:#f8fbf9}.compare-panel h3{margin:0 0 8px}.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.compare-grid h4{margin:0 0 7px}.compare-grid textarea{font-size:13px;min-height:170px;line-height:1.7}.comparison-toggle{margin-top:14px}.history-tools select{max-width:210px}
+@media(max-width:720px){.compare-grid{grid-template-columns:1fr}.history-tools select{max-width:100%}.btns button{min-height:44px}}@media(max-width:480px){#copy,#generate{width:100%}}
 </style>
 </head>
 <body>
@@ -110,32 +115,40 @@ a{color:#176b49}a:hover{text-decoration:none}
 <span><b>1</b> お知らせの種類を選ぶ</span><span><b>2</b> 内容を入力して作成</span><span><b>3</b> 確認してコピー</span>
 </div></div>
 <div class="layout">
-<section class="panel" id="create"><h2>✍ 文章の内容を入力</h2>
-<label for="school">教室名</label><input id="school" placeholder="例：みどりピアノ教室" maxlength="80"/>
+<section class="panel" id="create"><h2>✍ お知らせの内容を入力</h2>
+<p class="help">①種類を選ぶ → ②内容を書く → ③作成。必要なときだけ詳細設定を開いてください。</p>
+<label for="type">① お知らせの種類</label><select id="type"><option value="event">発表会・イベント</option><option value="closed">休講・振替</option><option value="monthly">月のおたより</option><option value="notice">一般のお知らせ</option></select>
+<label for="mode">文章の作成方法</label><select id="mode"><option value="template">無料テンプレート（AI回数を使わない）</option><option value="ai">AIで文章を作成（回数制限あり）</option></select>
+<p id="modeGuide" class="mode-guide" role="status">テンプレートは端末内で作成し、AI回数を消費しません。</p>
+<details id="advancedFields" class="advanced-fields"><summary>⚙️ 詳細設定（教室名・文体・日時など）</summary><div class="advanced-inner">
+<label for="school">教室名（任意）</label><input id="school" placeholder="例：みどりピアノ教室" maxlength="80"/>
 <div class="btns compact"><button type="button" id="savePrefs" class="secondary">教室の設定をこの端末に保存</button><button type="button" id="clearPrefs" class="secondary">設定を削除</button></div>
-<p class="help" id="presetStatus" aria-live="polite">教室名・ジャンル・文体・送信先・文章の長さなどを保存します。連絡内容は保存しません。</p>
-<label for="schoolType">教室のジャンル（任意）</label><select id="schoolType"><option value="general">一般的な教室</option><option value="piano">ピアノ・音楽</option><option value="english">英会話・語学</option><option value="sports">スポーツ・ダンス</option><option value="study">学習塾・学習教室</option></select>
-<label for="type">お知らせの種類</label><select id="type"><option value="event">発表会・イベント</option><option value="closed">休講・振替</option><option value="monthly">月のおたより</option><option value="notice">一般のお知らせ</option></select>
+<p class="help" id="presetStatus" aria-live="polite">教室名・ジャンル・文体・送信先・文章の長さを保存します。連絡内容は保存しません。</p>
+<label for="schoolType">教室のジャンル</label><select id="schoolType"><option value="general">一般的な教室</option><option value="piano">ピアノ・音楽</option><option value="english">英会話・語学</option><option value="sports">スポーツ・ダンス</option><option value="study">学習塾・学習教室</option></select>
 <label for="target">送る相手・掲載先</label><select id="target"><option value="parent">保護者向け</option><option value="line">LINE用</option><option value="instagram">Instagram用</option></select>
 <label for="tone">文章の雰囲気</label><select id="tone"><option value="polite">丁寧</option><option value="friendly">親しみやすい</option></select>
-<label for="mode">文章作成モード</label><select id="mode"><option value="template">テンプレート（いつでも利用可能）</option><option value="ai">AIで文章を生成（Cloudflare版）</option></select>
 <label for="length">文章の長さ</label><select id="length"><option value="normal">標準</option><option value="short">短め（要点だけ）</option><option value="long">詳しく</option></select>
 <label for="date">日時（任意）</label><input id="date" maxlength="120" placeholder="例：11月15日 13:00〜"/>
 <label for="place">場所（任意）</label><input id="place" maxlength="120" placeholder="例：市民ホール"/>
+</div></details>
 <div class="shortcut-area"><p class="help">入力例から試す</p><div class="btns compact"><button type="button" class="secondary example" data-example="event">発表会</button><button type="button" class="secondary example" data-example="closed">休講</button><button type="button" class="secondary example" data-example="monthly">月のおたより</button></div></div>
-<label for="info">伝えたい内容 <span style="color:#a63a3a">*</span></label><p id="infoHint" class="help">何が決まっているか、日時・対象・必要な対応などを短く入力してください。</p><textarea id="info" maxlength="1000" placeholder="例：参加費2,000円。持ち物は楽譜。申し込みは11月1日まで。"></textarea><p class="help" id="sampleNote" aria-live="polite"></p>
-<div class="btns"><button class="primary" id="generate">文章を作成する</button><button class="secondary" id="reset">入力をクリア</button></div>
-<div class="verify-box" id="turnstilePanel" hidden>
-<strong>安全確認</strong>
-<p class="verify-note">AIを安全に提供するため、生成前に簡単な確認をお願いしています。</p>
-<div id="turnstileWidget" aria-label="自動アクセス防止のための認証"></div>
-</div>
+<label for="info">② 伝えたい内容 <span style="color:#a63a3a">*</span></label><p id="infoHint" class="help">何が決まっているか、日時・対象・必要な対応などを短く入力してください。</p><textarea id="info" maxlength="1000" placeholder="例：参加費2,000円。持ち物は楽譜。申し込みは11月1日まで。"></textarea><p class="help" id="sampleNote" aria-live="polite"></p>
+<div class="unsent-draft"><label class="draft-check"><input type="checkbox" id="autoSaveDraft"/> 入力途中をこの端末に自動保存する</label>
+<p class="help">ONにした場合だけ保存します（7日後に期限切れ）。共用端末ではOFF推奨。生徒の氏名・連絡先は入力しないでください。</p>
+<div id="draftRestore" hidden><p class="help">以前の入力途中の内容があります。</p><button type="button" class="secondary" id="restoreDraft">途中の入力を復元</button><button type="button" class="secondary" id="discardDraft">保存した途中入力を削除</button></div>
+<p id="draftStatus" class="help" aria-live="polite"></p></div>
+<div class="verify-box" id="turnstilePanel" hidden><strong>AI用の安全確認</strong><p class="verify-note">AIで生成する前に完了してください。テンプレートには不要です。</p><div id="turnstileWidget" aria-label="自動アクセス防止のための認証"></div></div>
+<div class="btns"><button class="primary" id="generate">③ 文章を作成する</button><button class="secondary" id="reset">入力をクリア</button></div>
 <p class="verify-note" id="verificationNote" aria-live="polite"></p><p id="limitStatus" aria-live="polite"></p>
 <p class="notice">テンプレートモードは端末内で作成します。AIモードは入力内容をCloudflareのAIへ送信します。生徒の氏名・住所など個人情報は入力しないでください。詳しくは<a href="./privacy">プライバシー案内</a>をご確認ください。</p>
 </section>
 <section class="panel"><h2>📄 作成した文章</h2><div id="output" class="output muted" contenteditable="true" role="textbox" aria-label="作成した文章（直接編集できます）" aria-multiline="true" aria-live="polite">左のフォームに入力して「文章を作成する」を押してください。</div>
 <div id="characterCount" class="indicator" aria-live="polite">0文字</div>
-<div class="btns"><button class="primary" id="copy">文章をコピー</button><button class="secondary" id="save">履歴に保存</button><button class="secondary" id="download">テキスト保存</button><button class="secondary" id="undo" disabled>編集前に戻す</button></div>
+<div class="btns"><button class="primary" id="copy">📋 文章をコピー</button><button class="secondary" id="shareResult">スマホで文章を共有</button><button class="secondary" id="save">履歴に保存</button><button class="secondary" id="download">テキスト保存</button><button class="secondary" id="undo" disabled>編集前に戻す</button></div>
+<div class="comparison-toggle"><button type="button" id="compare" class="secondary">✍ 2つの文章を比較（AI回数なし）</button><p class="help">保護者向けとLINE向けのテンプレートを比べられます。</p></div>
+<section id="comparePanel" class="compare-panel" hidden><h3>文章の比較</h3><p class="help">入力した情報だけを使います。日時・費用などは必ず確認してください。</p>
+<div class="compare-grid"><div><h4>保護者向け・丁寧</h4><textarea id="compareFormal" readonly rows="9"></textarea><button type="button" class="secondary" data-adopt="formal">この文章を採用</button></div>
+<div><h4>LINE向け・短め</h4><textarea id="compareLine" readonly rows="9"></textarea><button type="button" class="secondary" data-adopt="line">この文章を採用</button></div></div></section>
 <section class="workflow-tools" aria-label="AIで文章を整える">
 <h3>✨ AIで文章を整える</h3>
 <p class="help">上の文章を直接修正してからでも、表現を整え直せます。AIへの送信はボタンを押したときだけです。</p>
@@ -148,7 +161,7 @@ a{color:#176b49}a:hover{text-decoration:none}
 <ul id="reviewHints"><li>文章を作成すると確認項目が表示されます。</li></ul>
 <p class="button-hint">自動確認は目安です。日時、費用、事実関係は必ず人が確認してください。</p></section>
 <p class="notice" id="status" aria-live="polite">生成した文章はここで直接編集できます。コピー前に日時・料金などを確認してください。</p>
-<div class="history"><h2>🕒 保存した履歴</h2><div class="history-tools"><label for="historySearch" style="margin:0">履歴を検索</label><input id="historySearch" type="search" maxlength="100" placeholder="教室名や文章で検索" autocomplete="off"/></div><div class="history-counter" id="historyCounter"></div><div id="historyList" class="muted">履歴はまだありません。</div><button class="secondary" id="clearHistory" style="margin-top:10px">履歴をすべて削除</button><p class="notice">履歴はこの端末のブラウザ内にのみ保存されます。最大20件まで。各履歴を個別に削除できます。</p></div>
+<div class="history"><h2>🕒 保存した履歴</h2><div class="history-tools"><label for="historySearch" style="margin:0">履歴を検索</label><input id="historySearch" type="search" maxlength="100" placeholder="教室名や文章で検索" autocomplete="off"/><label for="historyFilter" style="margin:0">種類</label><select id="historyFilter"><option value="all">すべて</option><option value="event">発表会・イベント</option><option value="closed">休講・振替</option><option value="monthly">月のおたより</option><option value="notice">一般のお知らせ</option><option value="legacy">以前の履歴</option></select></div><div class="history-counter" id="historyCounter"></div><div id="historyList" class="muted">履歴はまだありません。</div><button class="secondary" id="clearHistory" style="margin-top:10px">履歴をすべて削除</button><p class="notice">履歴はこの端末のブラウザ内にのみ保存されます。最大20件まで。各履歴を個別に削除できます。</p></div>
 </section></div>
 <section class="info-section" aria-labelledby="howto"><h2 id="howto">こんなお知らせを、数分で作成</h2>
 <div class="info-grid">
@@ -183,6 +196,7 @@ let requiresTurnstile=false;
 let turnstileToken='';
 let turnstileWidget=null;
 let turnstileReady=false;
+let turnstileSiteKey='';let turnstileLoadStarted=false;
 
 let draft='';
 let undoDraft='';
@@ -219,9 +233,9 @@ function getHistory(){
   }catch{return []}
 }
 function renderHistory(){
- const all=getHistory(),query=$('historySearch').value.trim().toLowerCase();
+ const all=getHistory(),query=$('historySearch').value.trim().toLowerCase(),kind=$('historyFilter').value;
  const rows=all.map((item,index)=>({item,index}))
-  .filter(({item})=>!query||((item.title||'')+'\n'+item.text).toLowerCase().includes(query))
+  .filter(({item})=>(kind==='all'||(kind==='legacy'?!item.type:item.type===kind))&&(!query||((item.title||'')+'\n'+item.text).toLowerCase().includes(query)))
   .sort((a,b)=>Number(!!b.item.favorite)-Number(!!a.item.favorite));
  $('historyCounter').textContent=all.length+'件保存・'+rows.length+'件表示（最大20件）';
  $('historyList').classList.toggle('muted',rows.length===0);
@@ -258,7 +272,7 @@ function show(text,rememberPrevious=true){
  updateCount();reviewDraft();
 }
 function currentText(){return $('output').classList.contains('muted')?'':$('output').innerText.trim()}
-function generate(){const v=Object.fromEntries(fields.map(k=>[k,$(k).value.trim()]));if(!v.info){$('info').focus();$('status').textContent='伝えたい内容を入力してください。';return}
+function buildTemplate(v){
 const greet=v.tone==='friendly'?'いつもありがとうございます！':'平素より教室の活動にご理解とご協力をいただき、誠にありがとうございます。';
 const opener={event:'発表会・イベントのご案内',closed:'休講・振替のお知らせ',monthly:'今月のおたより',notice:'教室からのお知らせ'}[v.type];
 const body={event:'下記のとおりイベントを予定しております。',closed:'教室の予定について、下記のとおりご案内いたします。',monthly:'今月の教室からのお知らせをお届けします。',notice:'教室からのご連絡です。'}[v.type];
@@ -267,15 +281,24 @@ let text;
 if(v.target==='instagram'){text='【'+opener+'】\n\n'+(v.school||'教室')+'からのお知らせです！\n\n'+(v.date?'📅 '+v.date+'\n':'')+(v.place?'📍 '+v.place+'\n':'')+'\n'+v.info+'\n\n'+ending+'\n\n#習い事 #教室のお知らせ'}
 else if(v.target==='line'){text='【'+opener+'】\n'+(v.school?v.school+'より\n':'')+'\n'+greet+'\n'+body+'\n'+(v.date?'\n日時：'+v.date:'')+(v.place?'\n場所：'+v.place:'')+'\n\n'+v.info+'\n\n'+ending}
 else{text=(v.school?v.school+'\n':'')+'【'+opener+'】\n\n保護者の皆さま\n\n'+greet+'\n'+body+'\n'+(v.date?'\n日時：'+v.date:'')+(v.place?'\n場所：'+v.place:'')+'\n\n'+v.info+'\n\n'+ending+'\n\n'+(v.school||'教室')}
-if($('length').value==='short'){
+if(v.length==='short'){
  text=text.replace(/^平素より教室の活動にご理解とご協力をいただき、誠にありがとうございます。\n?/m,'')
           .replace(/^いつもありがとうございます！\n?/m,'')
           .replace(/下記のとおりイベントを予定しております。\n?|教室の予定について、下記のとおりご案内いたします。\n?|今月の教室からのお知らせをお届けします。\n?|教室からのご連絡です。\n?/g,'')
           .replace(/\n{3,}/g,'\n\n').trim();
-}else if($('length').value==='long'&&v.target!=='instagram'){
+}else if(v.length==='long'&&v.target!=='instagram'){
  text+='\n\nご不明な点がございましたら、教室までお問い合わせください。';
 }
-show(text);$('status').textContent='下書きができました。事実関係を確認してご利用ください。'}
+return text;
+}
+function formValues(){return {...Object.fromEntries(fields.map(id=>[id,$(id).value.trim()])),length:$('length').value};}
+function scrollToResult(){if(window.matchMedia('(max-width:720px)').matches)$('output').scrollIntoView({behavior:'smooth',block:'center'});}
+function generate(){
+ const v=formValues();
+ if(!v.info){$('info').focus();$('status').textContent='伝えたい内容を入力してください。';return}
+ show(buildTemplate(v));scrollToResult();
+ $('status').textContent='下書きができました。日時や費用を確認してご利用ください。';
+}
 
 async function invokeAI(payload,kind){
   if(aiBusy)return;
@@ -292,7 +315,7 @@ async function invokeAI(payload,kind){
   aiBusy=true;generate.disabled=true;revise.disabled=true;
   if(kind==='revise')$('reviewStatus').textContent='AIが文章を書き直しています…';
   else $('status').textContent='AIで下書きを作成しています…';
-  generate.textContent=kind==='generate'?'AIが作成中…':'文章を作成する';
+  generate.textContent=kind==='generate'?'AIが作成中…':'③ 文章を作成する';
   revise.textContent=kind==='revise'?'AIが書き直し中…':'AIで書き直す';
   const controller=new AbortController();
   const timeout=setTimeout(()=>controller.abort(),30000);
@@ -305,6 +328,7 @@ async function invokeAI(payload,kind){
     if(!response.ok)throw Error(result?.error||('サーバーエラー：'+response.status));
     if(typeof result?.text!=='string'||!result.text.trim())throw Error('生成した文章を取得できませんでした。');
     show(result.text.trim());
+    scrollToResult();
     const message=kind==='revise'?'AIで文章を書き直しました。内容が変わっていないか確認してください。':'AIで下書きを作成しました。日時などを確認してください。';
     if(kind==='revise')$('reviewStatus').textContent=message;
     else $('status').textContent=message;
@@ -313,7 +337,7 @@ async function invokeAI(payload,kind){
     if(kind==='revise')$('reviewStatus').textContent=message;else $('status').textContent=message;
   }finally{
     clearTimeout(timeout);aiBusy=false;generate.disabled=false;revise.disabled=false;
-    generate.textContent='文章を作成する';revise.textContent='AIで書き直す';
+    generate.textContent='③ 文章を作成する';revise.textContent='AIで書き直す';
     if(requiresTurnstile){
       turnstileToken='';
       if(turnstileReady&&window.turnstile&&turnstileWidget!==null){
@@ -339,6 +363,80 @@ async function reviseDocument(){
   await invokeAI(inputs,'revise');
 }
 
+
+function compareTemplates(){
+ const v=formValues();
+ if(!v.info){$('status').textContent='比較する前に伝えたい内容を入力してください。';$('info').focus();return}
+ $('compareFormal').value=buildTemplate({...v,target:'parent',tone:'polite',length:'normal'});
+ $('compareLine').value=buildTemplate({...v,target:'line',tone:'friendly',length:'short'});
+ $('comparePanel').hidden=false;$('comparePanel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+$('compare').addEventListener('click',compareTemplates);
+document.querySelectorAll('[data-adopt]').forEach(button=>button.addEventListener('click',()=>{
+ const input=button.dataset.adopt==='line'?'compareLine':'compareFormal';
+ if(!$(input).value)return;
+ show($(input).value);$('comparePanel').hidden=true;
+ $('status').textContent='比較した文章を採用しました。日時や費用を確認してください。';scrollToResult();
+}));
+function updateModeUI(){
+ const ai=$('mode').value==='ai';
+ $('modeGuide').textContent=ai
+  ?'AIモードは入力内容をCloudflare Workers AIに送信します。同じ接続元から生成と書き直し合計12回／1時間まで。安全確認が必要です。'
+  :'テンプレートは端末内で作成し、AIの回数制限を消費しません。';
+ $('turnstilePanel').hidden=!(ai&&requiresTurnstile);
+}
+function ensureTurnstile(){
+ if(requiresTurnstile&&$('mode').value==='ai'&&turnstileSiteKey&&!turnstileLoadStarted){
+  turnstileLoadStarted=true;loadTurnstile(turnstileSiteKey);
+ }
+}
+$('mode').addEventListener('change',()=>{updateModeUI();ensureTurnstile()});
+const DRAFT_KEY='otayori-ai-unsent-v1',DRAFT_TTL=7*24*60*60*1000,draftFields=[...fields,'mode','length'];
+function readUnsent(){
+ try{
+  const v=JSON.parse(localStorage.getItem(DRAFT_KEY)||'null');
+  if(!v||typeof v.savedAt!=='number'||!v.values||typeof v.values!=='object')return null;
+  if(v.savedAt>Date.now()+60000||Date.now()-v.savedAt>DRAFT_TTL){localStorage.removeItem(DRAFT_KEY);return null}
+  return v;
+ }catch{return null}
+}
+function displayUnsent(){ $('draftRestore').hidden=!readUnsent(); }
+function saveUnsent(){
+ if(!$('autoSaveDraft').checked)return;
+ try{
+  localStorage.setItem(DRAFT_KEY,JSON.stringify({savedAt:Date.now(),values:Object.fromEntries(draftFields.map(id=>[id,$(id).value]))}));
+  $('draftStatus').textContent='入力途中をこの端末に自動保存しています（7日間）。';
+ }catch{$('draftStatus').textContent='自動保存できませんでした。ブラウザ設定をご確認ください。'}
+}
+$('autoSaveDraft').addEventListener('change',()=>{
+ if($('autoSaveDraft').checked){saveUnsent();$('draftRestore').hidden=true}
+ else{
+  try{localStorage.removeItem(DRAFT_KEY)}catch{}
+  $('draftRestore').hidden=true;
+  $('draftStatus').textContent='自動保存をOFFにし、途中入力の保存内容を削除しました。';
+ }
+});
+$('restoreDraft').addEventListener('click',()=>{
+ const data=readUnsent();
+ if(!data){displayUnsent();$('draftStatus').textContent='復元する途中入力はありません。';return}
+ for(const id of draftFields){
+  const el=$(id),value=data.values[id];
+  if(typeof value!=='string'||value.length>(el.maxLength>0?el.maxLength:5000))continue;
+  if(el.tagName==='SELECT'&&!Array.from(el.options).some(o=>o.value===value))continue;
+  el.value=value;
+ }
+ $('autoSaveDraft').checked=true;$('draftRestore').hidden=true;$('advancedFields').open=true;
+ updateModeUI();ensureTurnstile();reviewDraft();
+ $('draftStatus').textContent='途中入力を復元しました。日付・内容をご確認ください。';
+});
+$('discardDraft').addEventListener('click',()=>{
+ try{localStorage.removeItem(DRAFT_KEY)}catch{}
+ $('draftRestore').hidden=true;$('draftStatus').textContent='保存されていた途中入力を削除しました。';
+});
+draftFields.forEach(id=>['input','change'].forEach(eventType=>$(id).addEventListener(eventType,()=>{
+ saveUnsent();$('comparePanel').hidden=true;
+})));
+
 // Quick-start choices only configure form categories; they do not fabricate dates,
 // overwrite existing text, contact AI, or store any visitor data.
 const quickChoices={
@@ -353,6 +451,7 @@ document.querySelectorAll('[data-quick]').forEach(button=>{
   if(!item)return;
   $('type').value=item.type;
   if(item.schoolType)$('schoolType').value=item.schoolType;
+  saveUnsent();
   $('infoHint').textContent=item.hint;
   const hasExisting=$('info').value.trim().length>0;
   $('quickStatus').textContent=hasExisting
@@ -380,6 +479,7 @@ $('shareSite').addEventListener('click',async()=>{
  }
 });
 $('historySearch').addEventListener('input',renderHistory);
+$('historyFilter').addEventListener('change',renderHistory);
 $('generate').addEventListener('click',createDocument);
 $('revise').addEventListener('click',reviseDocument);
 $('undo').addEventListener('click',()=>{
@@ -398,9 +498,49 @@ $('download').addEventListener('click',()=>{
 });
 $('output').addEventListener('input',()=>{updateCount();reviewDraft()});
 fields.forEach(id=>$(id).addEventListener('change',reviewDraft));
-$('reset').addEventListener('click',()=>{fields.forEach(id=>{if($(id).tagName==='SELECT')$(id).selectedIndex=0;else $(id).value=''});$('status').textContent='入力をクリアしました。'});
-$('copy').addEventListener('click',async()=>{if(!currentText())return $('status').textContent='先に文章を作成してください。';try{await navigator.clipboard.writeText(currentText());$('status').textContent='文章をコピーしました。'}catch{$('status').textContent='コピーできませんでした。文章を選択してコピーしてください。'}});
-$('save').addEventListener('click',()=>{if(!currentText())return $('status').textContent='先に文章を作成してください。';try{const arr=getHistory();arr.unshift({title:$('school').value.trim()||'教室のお知らせ',date:new Date().toLocaleDateString('ja-JP'),text:currentText(),favorite:false});const keep=arr.filter(x=>x.favorite).slice(0,20);keep.push(...arr.filter(x=>!x.favorite).slice(0,20-keep.length));localStorage.setItem(KEY,JSON.stringify(keep));renderHistory();$('status').textContent='履歴を保存しました。'}catch{$('status').textContent='保存できませんでした。ブラウザの設定をご確認ください。'}});
+$('reset').addEventListener('click',()=>{
+ fields.forEach(id=>{if($(id).tagName==='SELECT')$(id).selectedIndex=0;else $(id).value=''});
+ $('mode').selectedIndex=0;$('length').selectedIndex=0;$('comparePanel').hidden=true;
+ if($('autoSaveDraft').checked){try{localStorage.removeItem(DRAFT_KEY)}catch{};$('autoSaveDraft').checked=false;}
+ updateModeUI();reviewDraft();
+ $('draftStatus').textContent='入力をクリアし、途中入力の自動保存をOFFにしました。';
+ $('status').textContent='入力をクリアしました。';
+});
+async function copyGeneratedText(){
+ const value=currentText();
+ if(!value){$('status').textContent='先に文章を作成してください。';return}
+ try{
+  if(!navigator.clipboard?.writeText)throw Error('no clipboard');
+  await navigator.clipboard.writeText(value);
+  $('status').textContent='文章をコピーしました。LINEなどに貼り付けできます。';
+ }catch{
+  const range=document.createRange();range.selectNodeContents($('output'));
+  const selection=window.getSelection();
+  if(selection){selection.removeAllRanges();selection.addRange(range)}
+  $('status').textContent='文章を選択しました。コピー操作を行ってください。';
+ }
+}
+$('copy').addEventListener('click',copyGeneratedText);
+$('shareResult').addEventListener('click',async()=>{
+ const text=currentText();
+ if(!text){$('status').textContent='先に文章を作成してください。';return}
+ if(typeof navigator.share!=='function'){await copyGeneratedText();return}
+ try{await navigator.share({title:'教室のお知らせ文',text});$('status').textContent='共有先を選択しました。送信前に内容を確認してください。';}
+ catch(e){if(e?.name!=='AbortError')$('status').textContent='共有できませんでした。コピー機能をご利用ください。';}
+});
+$('save').addEventListener('click',()=>{
+ if(!currentText())return $('status').textContent='先に文章を作成してください。';
+ try{
+  const arr=getHistory(),kind=$('type').value;
+  const names={event:'発表会・イベント',closed:'休講・振替',monthly:'月のおたより',notice:'一般のお知らせ'};
+  const school=$('school').value.trim(),title=(names[kind]||'教室のお知らせ')+(school?'｜'+school:'');
+  arr.unshift({title,date:new Date().toLocaleDateString('ja-JP'),text:currentText(),type:kind,favorite:false});
+  const keep=arr.filter(x=>x.favorite).slice(0,20);
+  keep.push(...arr.filter(x=>!x.favorite).slice(0,20-keep.length));
+  localStorage.setItem(KEY,JSON.stringify(keep));
+  renderHistory();$('status').textContent='種類付きの履歴として保存しました。';
+ }catch{$('status').textContent='保存できませんでした。ブラウザの設定をご確認ください。'}
+});
 $('clearHistory').addEventListener('click',()=>{if(!confirm('保存した履歴をすべて削除しますか？'))return;localStorage.removeItem(KEY);renderHistory();$('status').textContent='履歴を削除しました。'});
 renderHistory();
 
@@ -438,6 +578,7 @@ document.querySelectorAll('[data-example]').forEach(button=>{
   const sample=examples[button.dataset.example];
   if(!sample)return;
   ['type','date','place','info'].forEach(id=>$(id).value=sample[id]);
+  saveUnsent();
   $('status').textContent='架空の入力例を設定しました。「文章を作成する」を押してください。';
  });
 });
@@ -492,7 +633,7 @@ if(Object.prototype.hasOwnProperty.call(samplePresets,sampleKey)){
  $('sampleNote').textContent='例文の入力例をセットしました。架空の日時・金額・会場を実際の情報に変更してから作成してください。';
  $('status').textContent='入力例をセットしました。内容を確認して「文章を作成する」を押してください。';
 }
-reviewDraft();
+updateModeUI();displayUnsent();reviewDraft();
 
 async function loadTurnstile(sitekey){
   const script=document.createElement('script');
@@ -527,15 +668,16 @@ async function initializeVerification(){
       $('verificationNote').textContent='安全確認の設定が未完了です。管理者がCloudflareの環境変数を確認してください。';
     }else if(config.turnstileEnabled&&typeof config.sitekey==='string'){
       requiresTurnstile=true;
-      $('turnstilePanel').hidden=false;
+      turnstileSiteKey=config.sitekey;
       $('verificationNote').textContent='AI生成には安全確認が必要です。';
-      await loadTurnstile(config.sitekey);
+      updateModeUI();ensureTurnstile();
     }else{
       $('verificationNote').textContent='現在は試用版です。アクセス制限を準備中です。';
     }
   }catch{
     $('verificationNote').textContent='アクセス制限の設定を確認できませんでした。AI生成できない場合は後でもう一度お試しください。';
   }
+  updateModeUI();
 }
 initializeVerification();
 
